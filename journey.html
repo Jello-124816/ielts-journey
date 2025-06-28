@@ -1,65 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>IELTS Journey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
-      padding: 30px 20px;
       font-family: Arial, sans-serif;
-      background-color: #fffaf0;
+      background-color: #fff8e7;
       text-align: center;
+      padding: 40px 20px;
+      margin: 0;
     }
 
     h1 {
       font-size: 8vw;
-      color: #333;
       margin-bottom: 40px;
+      color: #333;
     }
 
-    .button {
-      display: block;
-      width: 100%;
-      max-width: 320px;
-      margin: 20px auto;
-      padding: 18px 0;
-      font-size: 6vw;
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .option {
+      width: 90%;
+      max-width: 300px;
+      height: 70px;
       background-color: #007bff;
       color: white;
-      border: none;
-      border-radius: 10px;
-      text-decoration: none;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 6vw;
       font-weight: bold;
-      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: 0.3s;
     }
 
-    .button:hover {
+    .option:hover {
       background-color: #0056b3;
+    }
+
+    .back-btn {
+      margin-top: 40px;
+    }
+
+    .back-btn button {
+      padding: 12px 24px;
+      font-size: 5vw;
+      background-color: #888;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .back-btn button:hover {
+      background-color: #555;
     }
 
     @media (min-width: 600px) {
       h1 {
         font-size: 36px;
       }
-
-      .button {
+      .option {
         font-size: 20px;
-        padding: 16px 0;
+        height: 80px;
       }
-    }
-
-    .back-button {
-      background-color: #6c757d;
-    }
-
-    .back-button:hover {
-      background-color: #495057;
+      .back-btn button {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -67,11 +83,17 @@
 
   <h1>Welcome to My IELTS Journey</h1>
 
-  <a href="listening.html" class="button">Listening</a>
-  <a href="reading.html" class="button">Reading</a>
-  <a href="writing.html" class="button">Writing</a>
-  <a href="speaking.html" class="button">Speaking</a>
-  <a href="index.html" class="button back-button">Back to Home</a>
+  <div class="options">
+    <a class="option" href="listening.html">Listening</a>
+    <a class="option" href="reading.html">Reading</a>
+    <a class="option" href="writing.html">Writing</a>
+    <a class="option" href="speaking.html">Speaking</a>
+    <a class="option" href="vocabulary.html">Vocabulary</a>
+  </div>
+
+  <div class="back-btn">
+    <a href="index.html"><button>Back to Home</button></a>
+  </div>
 
 </body>
 </html>
