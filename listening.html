@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>IELTS Listening Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 40px;
+      padding: 20px;
       background-color: #f9f9f9;
     }
 
     h1 {
-      font-size: 32px;
+      font-size: 28px;
       margin-bottom: 20px;
       color: #333;
     }
 
     .section {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .tedlink {
-      display: inline-block;
-      padding: 10px 20px;
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 10px;
+      padding: 12px 0;
       background-color: #e62b1e;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      margin-right: 10px;
     }
 
     .tedlink.clicked {
@@ -39,21 +42,24 @@
     }
 
     input[type="text"] {
-      width: 60%;
+      width: 100%;
       max-width: 400px;
-      padding: 8px;
+      margin: 5px auto;
+      padding: 10px;
       font-size: 14px;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 5px;
+      display: block;
     }
 
     .saveBtn, .clearBtn {
+      display: inline-block;
+      margin: 5px;
       padding: 8px 16px;
       font-size: 14px;
-      margin-left: 5px;
-      color: white;
       border: none;
       border-radius: 4px;
+      color: white;
       cursor: pointer;
     }
 
@@ -74,23 +80,23 @@
     }
 
     .progress {
-      margin-top: 30px;
+      margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
       color: #333;
     }
 
     .btn-row {
-      margin-top: 30px;
+      margin-top: 25px;
     }
 
     .btn-row button {
-      margin: 0 10px;
+      margin: 10px 5px;
       padding: 10px 20px;
       font-size: 16px;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
@@ -121,7 +127,7 @@
   <!-- Progress Display -->
   <div class="progress" id="progressCounter">0/3 completed</div>
 
-  <!-- Buttons -->
+  <!-- Navigation Buttons -->
   <div class="btn-row">
     <a href="journey.html"><button>Back</button></a>
     <button id="refreshBtn">Refresh</button>
@@ -152,8 +158,7 @@
       clearBtn.className = 'clearBtn';
       clearBtn.textContent = 'Clear Link';
 
-      const isClicked = localStorage.getItem('clicked_' + id) === 'true';
-      if (isClicked) {
+      if (localStorage.getItem('clicked_' + id) === 'true') {
         linkBtn.classList.add('clicked');
       }
 
@@ -199,12 +204,12 @@
       sectionIds.forEach(id => {
         localStorage.removeItem('clicked_' + id);
         const btn = document.getElementById(id);
-        btn.classList.remove('clicked');
+        if (btn) btn.classList.remove('clicked');
       });
       updateProgress();
     }
 
-    // Init
+    // Initialize
     window.onload = () => {
       const container = document.getElementById('sections');
       sectionIds.forEach((id, i) => {
