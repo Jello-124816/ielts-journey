@@ -49,7 +49,7 @@
     }
 
     .read-btn {
-      background-color: #007bff;
+      background-color: #dc3545;
       color: white;
     }
 
@@ -58,14 +58,20 @@
     }
 
     .clear-btn {
-      background-color: #dc3545;
+      background-color: #6c757d;
       color: white;
     }
 
-    .back-btn {
-      background-color: #6c757d;
+    .refresh-btn {
+      background-color: #28a745;
       color: white;
       margin-top: 30px;
+    }
+
+    .back-btn {
+      background-color: #333;
+      color: white;
+      margin-top: 10px;
     }
 
     .progress {
@@ -92,7 +98,7 @@
     <h2>Reading01</h2>
     <input type="text" id="reading01" placeholder="Paste PDF link here">
     <br>
-    <button class="read-btn" id="readBtn01" onclick="openPDF('reading01', 'readBtn01', 1)">Read</button>
+    <button class="read-btn" id="readBtn01" onclick="openPDF('reading01', 'readBtn01')">Read</button>
     <button class="clear-btn" onclick="clearLink('reading01')">Clear</button>
   </div>
 
@@ -100,7 +106,7 @@
     <h2>Reading02</h2>
     <input type="text" id="reading02" placeholder="Paste PDF link here">
     <br>
-    <button class="read-btn" id="readBtn02" onclick="openPDF('reading02', 'readBtn02', 2)">Read</button>
+    <button class="read-btn" id="readBtn02" onclick="openPDF('reading02', 'readBtn02')">Read</button>
     <button class="clear-btn" onclick="clearLink('reading02')">Clear</button>
   </div>
 
@@ -108,33 +114,23 @@
     <h2>Reading03</h2>
     <input type="text" id="reading03" placeholder="Paste PDF link here">
     <br>
-    <button class="read-btn" id="readBtn03" onclick="openPDF('reading03', 'readBtn03', 3)">Read</button>
+    <button class="read-btn" id="readBtn03" onclick="openPDF('reading03', 'readBtn03')">Read</button>
     <button class="clear-btn" onclick="clearLink('reading03')">Clear</button>
   </div>
+
+  <button class="refresh-btn" onclick="resetProgress()">Refresh</button>
 
   <a href="journey.html">
     <button class="back-btn">Back to Journey</button>
   </a>
 
   <script>
-    // Store button state and timestamp in localStorage
     const progressEl = document.getElementById('progress');
     const buttons = ['readBtn01', 'readBtn02', 'readBtn03'];
     const storageKey = 'readingProgress';
-    const timeKey = 'readingTimestamp';
 
     function loadProgress() {
       const saved = JSON.parse(localStorage.getItem(storageKey)) || [];
-      const savedTime = parseInt(localStorage.getItem(timeKey)) || 0;
-      const now = Date.now();
-
-      // Reset after 24 hours
-      if (now - savedTime > 24 * 60 * 60 * 1000) {
-        localStorage.removeItem(storageKey);
-        localStorage.removeItem(timeKey);
-        return;
-      }
-
       let count = 0;
       saved.forEach(id => {
         const btn = document.getElementById(id);
@@ -143,7 +139,6 @@
           count++;
         }
       });
-
       updateProgress(count);
     }
 
@@ -151,22 +146,18 @@
       progressEl.textContent = `${count}/3 Completed`;
     }
 
-    function openPDF(inputId, btnId, num) {
+    function openPDF(inputId, btnId) {
       const link = document.getElementById(inputId).value.trim();
       if (!link || !link.endsWith('.pdf')) {
         alert("Please enter a valid PDF link ending with .pdf");
         return;
       }
-
       window.open(link, '_blank');
-
       const clicked = JSON.parse(localStorage.getItem(storageKey)) || [];
       if (!clicked.includes(btnId)) {
         clicked.push(btnId);
         localStorage.setItem(storageKey, JSON.stringify(clicked));
-        localStorage.setItem(timeKey, Date.now().toString());
       }
-
       document.getElementById(btnId).classList.add('clicked');
       updateProgress(clicked.length);
     }
@@ -175,7 +166,15 @@
       document.getElementById(inputId).value = "";
     }
 
-    // On load
+    function resetProgress() {
+      localStorage.removeItem(storageKey);
+      buttons.forEach(id => {
+        document.getElementById(id).classList.remove('clicked');
+      });
+      updateProgress(0);
+    }
+
+    // Load progress on page load
     loadProgress();
   </script>
 
