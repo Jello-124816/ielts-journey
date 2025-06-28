@@ -6,105 +6,73 @@
   <title>IELTS Reading Practice</title>
   <style>
     body {
-      margin: 0;
-      padding: 20px;
       font-family: Arial, sans-serif;
       background-color: #fdfdfd;
+      padding: 20px;
       text-align: center;
     }
 
     h1 {
       font-size: 7vw;
-      color: #222;
       margin-bottom: 30px;
+      color: #222;
     }
 
-    .btn {
-      display: block;
+    .block {
+      margin-bottom: 25px;
+    }
+
+    input[type="text"] {
       width: 90%;
-      max-width: 340px;
-      margin: 12px auto;
-      padding: 14px;
-      font-size: 5.5vw;
-      background-color: #dc3545;
-      color: white;
+      max-width: 400px;
+      padding: 12px;
+      font-size: 4.5vw;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin: 5px 4px;
+      padding: 12px 16px;
+      font-size: 4.5vw;
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .btn:hover {
-      background-color: #a71d2a;
-    }
-
     .read-btn {
-      background-color: #28a745;
+      background-color: #007bff;
+      color: white;
     }
 
     .read-btn:hover {
-      background-color: #1e7e34;
+      background-color: #0056b3;
     }
 
-    textarea {
-      width: 90%;
-      max-width: 700px;
-      height: 200px;
-      margin: 10px auto;
-      padding: 12px;
-      font-size: 4.5vw;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      resize: vertical;
+    .clear-btn {
+      background-color: #dc3545;
+      color: white;
     }
 
-    @media (min-width: 600px) {
-      h1 { font-size: 36px; }
-      .btn { font-size: 18px; padding: 14px; }
-      textarea { font-size: 16px; height: 250px; }
+    .clear-btn:hover {
+      background-color: #a71d2a;
     }
 
     .back-btn {
       background-color: #6c757d;
+      color: white;
+      margin-top: 30px;
     }
 
     .back-btn:hover {
       background-color: #495057;
     }
 
-    #readingView {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: 20px;
-      background: white;
-      z-index: 1000;
-      overflow-y: auto;
-      font-size: 5vw;
-      line-height: 1.6;
-      text-align: left;
-    }
-
-    #readingText {
-      white-space: pre-wrap;
-    }
-
-    #closeReadingBtn {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 18px;
-      background-color: #333;
-      color: white;
-      border: none;
-      border-radius: 8px;
-    }
-
     @media (min-width: 600px) {
-      #readingView { font-size: 18px; }
+      h1 { font-size: 36px; }
+      input[type="text"], button { font-size: 18px; }
     }
   </style>
 </head>
@@ -112,62 +80,45 @@
 
   <h1>IELTS Reading Practice</h1>
 
-  <!-- Reading 01 -->
-  <button class="btn" onclick="toggleTextarea('reading01')">Reading01</button>
-  <textarea id="reading01" placeholder="Paste your text here..."></textarea>
-  <button class="btn read-btn" onclick="readText('reading01')">Read</button>
-
-  <!-- Reading 02 -->
-  <button class="btn" onclick="toggleTextarea('reading02')">Reading02</button>
-  <textarea id="reading02" placeholder="Paste your text here..."></textarea>
-  <button class="btn read-btn" onclick="readText('reading02')">Read</button>
-
-  <!-- Reading 03 -->
-  <button class="btn" onclick="toggleTextarea('reading03')">Reading03</button>
-  <textarea id="reading03" placeholder="Paste your text here..."></textarea>
-  <button class="btn read-btn" onclick="readText('reading03')">Read</button>
-
-  <a href="journey.html">
-    <button class="btn back-btn">Back to Journey</button>
-  </a>
-
-  <!-- Full-Screen Reading View -->
-  <div id="readingView">
-    <div id="readingText"></div>
-    <button id="closeReadingBtn" onclick="closeReading()">Close</button>
+  <div class="block">
+    <input type="text" id="reading01" placeholder="Paste PDF link here">
+    <br>
+    <button class="read-btn" onclick="openPDF('reading01')">Read</button>
+    <button class="clear-btn" onclick="clearLink('reading01')">Clear</button>
   </div>
 
+  <div class="block">
+    <input type="text" id="reading02" placeholder="Paste PDF link here">
+    <br>
+    <button class="read-btn" onclick="openPDF('reading02')">Read</button>
+    <button class="clear-btn" onclick="clearLink('reading02')">Clear</button>
+  </div>
+
+  <div class="block">
+    <input type="text" id="reading03" placeholder="Paste PDF link here">
+    <br>
+    <button class="read-btn" onclick="openPDF('reading03')">Read</button>
+    <button class="clear-btn" onclick="clearLink('reading03')">Clear</button>
+  </div>
+
+  <a href="journey.html">
+    <button class="back-btn">Back to Journey</button>
+  </a>
+
   <script>
-    function toggleTextarea(id) {
-      const areas = document.querySelectorAll("textarea");
-      areas.forEach(a => {
-        if (a.id === id) {
-          a.style.display = (a.style.display === "block") ? "none" : "block";
-        } else {
-          a.style.display = "none";
-        }
-      });
-
-      const buttons = document.querySelectorAll(".read-btn");
-      buttons.forEach(btn => {
-        const relatedTextarea = document.getElementById(btn.getAttribute("onclick").match(/'(.*?)'/)[1]);
-        btn.style.display = relatedTextarea.style.display === "block" ? "block" : "none";
-      });
-    }
-
-    function readText(textareaId) {
-      const text = document.getElementById(textareaId).value;
-      if (!text.trim()) {
-        alert("Please paste some text to read.");
-        return;
+    function openPDF(id) {
+      const link = document.getElementById(id).value.trim();
+      if (link.endsWith(".pdf")) {
+        window.open(link, "_blank");
+      } else if (link) {
+        alert("Please enter a valid PDF link (must end with .pdf).");
+      } else {
+        alert("Please paste a PDF link first.");
       }
-      document.getElementById("readingText").textContent = text;
-      document.getElementById("readingView").style.display = "block";
-      window.scrollTo(0, 0);
     }
 
-    function closeReading() {
-      document.getElementById("readingView").style.display = "none";
+    function clearLink(id) {
+      document.getElementById(id).value = "";
     }
   </script>
 
