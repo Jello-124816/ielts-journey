@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IELTS Listening Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .tedlink {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 10px;
+      padding: 12px 0;
+      background-color: #e62b1e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tedlink.clicked {
+      background-color: #888;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 400px;
+      margin: 5px auto;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: block;
+    }
+
+    .saveBtn, .clearBtn {
+      display: inline-block;
+      margin: 5px;
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .saveBtn {
+      background-color: #007bff;
+    }
+
+    .saveBtn:hover {
+      background-color: #0056b3;
+    }
+
+    .clearBtn {
+      background-color: #dc3545;
+    }
+
+    .clearBtn:hover {
+      background-color: #b52a37;
+    }
+
+    .progress {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .btn-row {
+      margin-top: 25px;
+    }
+
+    .btn-row button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-row a button {
+      background-color: #888;
+    }
+
+    .btn-row a button:hover {
+      background-color: #555;
+    }
+
+    #refreshBtn {
+      background-color: #28a745;
+    }
+
+    #refreshBtn:hover {
+      background-color: #1e7e34;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>IELTS Listening Practice</h1>
+
+  <!-- Listening Sections -->
+  <div id="sections"></div>
+
+  <!-- Progress Display -->
+  <div class="progress" id="progressCounter">0/3 completed</div>
+
+  <!-- Navigation Buttons -->
+  <div class="btn-row">
+    <a href="journey.html"><button>Back</button></a>
+    <button id="refreshBtn">Refresh</button>
+  </div>
+
+  <script>
+    const sectionIds = ['listening01', 'listening02', 'listening03'];
+
+    function createSection(id, index) {
+      const container = document.createElement('div');
+      container.className = 'section';
+
+      const linkBtn = document.createElement('button');
+      linkBtn.className = 'tedlink';
+      linkBtn.id = id;
+      linkBtn.textContent = 'Listening' + (index + 1);
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Change video link here';
+      input.value = localStorage.getItem('link_' + id) || '';
+
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'saveBtn';
+      saveBtn.textContent = 'Save';
+
+      const clearBtn = document.createElement('button');
+      clearBtn.className = 'clearBtn';
+      clearBtn.textContent = 'Clear Link';
+
+      if (localStorage.getItem('clicked_' + id) === 'true') {
+        linkBtn.classList.add('clicked');
+      }
+
+      linkBtn.addEventListener('click', () => {
+        const savedLink = localStorage.getItem('link_' + id);
+        if (savedLink) {
+          window.open(savedLink, '_blank');
+          localStorage.setItem('clicked_' + id, 'true');
+          linkBtn.classList.add('clicked');
+          updateProgress();
+        } else {
+          alert('Please enter and save a video link first.');
+        }
+      });
+
+      saveBtn.addEventListener('click', () => {
+        if (input.value.trim() !== '') {
+          localStorage.setItem('link_' + id, input.value.trim());
+          alert('Link saved!');
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        localStorage.removeItem('link_' + id);
+        input.value = '';
+        alert('Link cleared!');
+      });
+
+      container.appendChild(linkBtn);
+      container.appendChild(input);
+      container.appendChild(saveBtn);
+      container.appendChild(clearBtn);
+
+      return container;
+    }
+
+    function updateProgress() {
+      const completed = sectionIds.filter(id => localStorage.getItem('clicked_' + id) === 'true').length;
+      document.getElementById('progressCounter').textContent = `${completed}/3 completed`;
+    }
+
+    function resetProgress() {
+      sectionIds.forEach(id => {
+        localStorage.removeItem('clicked_' + id);
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.remove('clicked');
+      });
+      updateProgress();
+    }
+
+    // Initialize
+    window.onload = () => {
+      const container = document.getElementById('sections');
+      sectionIds.forEach((id, i) => {
+        const section = createSection(id, i);
+        container.appendChild(section);
+      });
+
+      updateProgress();
+      document.getElementById('refreshBtn').addEventListener('click', resetProgress);
+    };
+  </script>
+
+</body>
+</html>
