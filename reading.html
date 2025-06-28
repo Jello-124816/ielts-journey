@@ -1,24 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Reading</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IELTS Reading Practice</title>
   <style>
     body {
+      margin: 0;
+      padding: 30px 20px;
       font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
       text-align: center;
-      padding-top: 100px;
+    }
+
+    h1 {
+      font-size: 8vw;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      margin: 15px auto;
+      padding: 16px 0;
+      font-size: 6vw;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .passage {
+      display: none;
+      text-align: left;
+      margin: 20px auto;
+      padding: 15px;
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      max-width: 700px;
+      font-size: 5vw;
+    }
+
+    @media (min-width: 600px) {
+      h1 { font-size: 36px; }
+      .btn { font-size: 20px; }
+      .passage { font-size: 18px; }
+    }
+
+    .back-btn {
+      background-color: #6c757d;
+    }
+
+    .back-btn:hover {
+      background-color: #495057;
     }
   </style>
 </head>
 <body>
 
   <h1>IELTS Reading Practice</h1>
-  <p>Here you can add reading tests, tips, or vocabulary.</p>
 
-  <a href="journey.html">
-    <button style="margin-top: 30px; padding: 10px 20px;">Back</button>
-  </a>
+  <button class="btn" onclick="togglePassage('p1')">Reading01</button>
+  <div id="p1" class="passage">
+    Reading Passage 1: <br><br>
+    The growth of online education has transformed how students learn. With flexible schedules and remote access, learners can engage from any part of the world. However, this also presents challenges in maintaining focus and motivation. 
+  </div>
+
+  <button class="btn" onclick="togglePassage('p2')">Reading02</button>
+  <div id="p2" class="passage">
+    Reading Passage 2: <br><br>
+    Urban gardening is a rising trend in cities where space is limited. People plant herbs and vegetables in balconies, rooftops, and even vertical walls. This helps improve air quality and brings nature into dense environments.
+  </div>
+
+  <button class="btn" onclick="togglePassage('p3')">Reading03</button>
+  <div id="p3" class="passage">
+    Reading Passage 3: <br><br>
+    Renewable energy sources like solar and wind are crucial in fighting climate change. They reduce reliance on fossil fuels and lower carbon emissions. However, their effectiveness depends on technology and infrastructure support.
+  </div>
+
+  <a href="journey.html"><button class="btn back-btn">Back to Journey</button></a>
+
+  <script>
+    function togglePassage(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
 
 </body>
 </html>
