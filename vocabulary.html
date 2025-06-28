@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocabulary Practice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 6vw;
+      margin-bottom: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      font-size: 5vw;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background-color: #0056b3;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 4.5vw;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+
+    button.save-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 4.5vw;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .vocab-list {
+      margin-top: 20px;
+    }
+
+    .word {
+      font-size: 5vw;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #333;
+    }
+
+    .meaning {
+      font-size: 4.2vw;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    @media (min-width: 600px) {
+      h1 { font-size: 32px; }
+      .tab-btn, .save-btn { font-size: 18px; }
+      input[type="text"] { font-size: 16px; }
+      .word { font-size: 20px; }
+      .meaning { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Vocabulary</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('add')">Add New Vocabulary</button>
+    <button class="tab-btn" onclick="switchTab('list')">My Vocabulary</button>
+  </div>
+
+  <div id="add" class="section active">
+    <div class="input-group">
+      <input type="text" id="newWord" placeholder="Type your new word">
+      <input type="text" id="newMeaning" placeholder="Type the meaning">
+    </div>
+    <button class="save-btn" onclick="saveVocab()">Save</button>
+  </div>
+
+  <div id="list" class="section">
+    <div id="vocabList" class="vocab-list"></div>
+  </div>
+
+  <script>
+    const newWordInput = document.getElementById('newWord');
+    const newMeaningInput = document.getElementById('newMeaning');
+    const vocabListEl = document.getElementById('vocabList');
+
+    function switchTab(tab) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      document.querySelectorAll('.tab-btn')[tab === 'add' ? 0 : 1].classList.add('active');
+      if (tab === 'list') displayVocab();
+    }
+
+    function saveVocab() {
+      const word = newWordInput.value.trim();
+      const meaning = newMeaningInput.value.trim();
+      if (!word || !meaning) {
+        alert('Please fill in both fields.');
+        return;
+      }
+
+      const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+      vocabData.push({ word, meaning });
+      localStorage.setItem('vocabList', JSON.stringify(vocabData));
+      newWordInput.value = '';
+      newMeaningInput.value = '';
+      alert('Saved successfully!');
+    }
+
+    function displayVocab() {
+      const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+      vocabListEl.innerHTML = '';
+      vocabData.forEach(entry => {
+        const wordEl = document.createElement('div');
+        wordEl.className = 'word';
+        wordEl.textContent = entry.word;
+
+        const meaningEl = document.createElement('div');
+        meaningEl.className = 'meaning';
+        meaningEl.textContent = entry.meaning;
+
+        vocabListEl.appendChild(wordEl);
+        vocabListEl.appendChild(meaningEl);
+      });
+    }
+  </script>
+
+</body>
+</html>
