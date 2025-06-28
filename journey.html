@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IELTS Journey</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 30px 20px;
-      background-color: #fffaf0;
       font-family: Arial, sans-serif;
+      background-color: #fffaf0;
       text-align: center;
     }
 
@@ -22,14 +26,14 @@
     .button {
       display: block;
       width: 100%;
-      max-width: 300px;
-      margin: 15px auto;
-      padding: 14px 0;
-      font-size: 5vw;
+      max-width: 320px;
+      margin: 20px auto;
+      padding: 18px 0;
+      font-size: 6vw;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       text-decoration: none;
       font-weight: bold;
       transition: background-color 0.3s ease;
@@ -39,25 +43,35 @@
       background-color: #0056b3;
     }
 
-    @media (min-width: 500px) {
+    @media (min-width: 600px) {
       h1 {
         font-size: 36px;
       }
 
       .button {
-        font-size: 18px;
+        font-size: 20px;
+        padding: 16px 0;
       }
+    }
+
+    .back-button {
+      background-color: #6c757d;
+    }
+
+    .back-button:hover {
+      background-color: #495057;
     }
   </style>
 </head>
 <body>
 
-  <h1>IELTS Journey</h1>
+  <h1>Welcome to My IELTS Journey</h1>
 
   <a href="listening.html" class="button">Listening</a>
   <a href="reading.html" class="button">Reading</a>
   <a href="writing.html" class="button">Writing</a>
   <a href="speaking.html" class="button">Speaking</a>
+  <a href="index.html" class="button back-button">Back to Home</a>
 
 </body>
 </html>
