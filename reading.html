@@ -38,8 +38,15 @@
       background-color: #a71d2a;
     }
 
+    .read-btn {
+      background-color: #28a745;
+    }
+
+    .read-btn:hover {
+      background-color: #1e7e34;
+    }
+
     textarea {
-      display: none;
       width: 90%;
       max-width: 700px;
       height: 200px;
@@ -52,19 +59,9 @@
     }
 
     @media (min-width: 600px) {
-      h1 {
-        font-size: 36px;
-      }
-
-      .btn {
-        font-size: 18px;
-        padding: 14px;
-      }
-
-      textarea {
-        font-size: 16px;
-        height: 250px;
-      }
+      h1 { font-size: 36px; }
+      .btn { font-size: 18px; padding: 14px; }
+      textarea { font-size: 16px; height: 250px; }
     }
 
     .back-btn {
@@ -74,35 +71,103 @@
     .back-btn:hover {
       background-color: #495057;
     }
+
+    #readingView {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 20px;
+      background: white;
+      z-index: 1000;
+      overflow-y: auto;
+      font-size: 5vw;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    #readingText {
+      white-space: pre-wrap;
+    }
+
+    #closeReadingBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    @media (min-width: 600px) {
+      #readingView { font-size: 18px; }
+    }
   </style>
 </head>
 <body>
 
   <h1>IELTS Reading Practice</h1>
 
-  <button class="btn" onclick="toggleText('reading01')">Reading01</button>
+  <!-- Reading 01 -->
+  <button class="btn" onclick="toggleTextarea('reading01')">Reading01</button>
   <textarea id="reading01" placeholder="Paste your text here..."></textarea>
+  <button class="btn read-btn" onclick="readText('reading01')">Read</button>
 
-  <button class="btn" onclick="toggleText('reading02')">Reading02</button>
+  <!-- Reading 02 -->
+  <button class="btn" onclick="toggleTextarea('reading02')">Reading02</button>
   <textarea id="reading02" placeholder="Paste your text here..."></textarea>
+  <button class="btn read-btn" onclick="readText('reading02')">Read</button>
 
-  <button class="btn" onclick="toggleText('reading03')">Reading03</button>
+  <!-- Reading 03 -->
+  <button class="btn" onclick="toggleTextarea('reading03')">Reading03</button>
   <textarea id="reading03" placeholder="Paste your text here..."></textarea>
+  <button class="btn read-btn" onclick="readText('reading03')">Read</button>
 
   <a href="journey.html">
     <button class="btn back-btn">Back to Journey</button>
   </a>
 
+  <!-- Full-Screen Reading View -->
+  <div id="readingView">
+    <div id="readingText"></div>
+    <button id="closeReadingBtn" onclick="closeReading()">Close</button>
+  </div>
+
   <script>
-    function toggleText(id) {
-      const all = document.querySelectorAll('textarea');
-      all.forEach(el => {
-        if (el.id === id) {
-          el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    function toggleTextarea(id) {
+      const areas = document.querySelectorAll("textarea");
+      areas.forEach(a => {
+        if (a.id === id) {
+          a.style.display = (a.style.display === "block") ? "none" : "block";
         } else {
-          el.style.display = 'none';
+          a.style.display = "none";
         }
       });
+
+      const buttons = document.querySelectorAll(".read-btn");
+      buttons.forEach(btn => {
+        const relatedTextarea = document.getElementById(btn.getAttribute("onclick").match(/'(.*?)'/)[1]);
+        btn.style.display = relatedTextarea.style.display === "block" ? "block" : "none";
+      });
+    }
+
+    function readText(textareaId) {
+      const text = document.getElementById(textareaId).value;
+      if (!text.trim()) {
+        alert("Please paste some text to read.");
+        return;
+      }
+      document.getElementById("readingText").textContent = text;
+      document.getElementById("readingView").style.display = "block";
+      window.scrollTo(0, 0);
+    }
+
+    function closeReading() {
+      document.getElementById("readingView").style.display = "none";
     }
   </script>
 
