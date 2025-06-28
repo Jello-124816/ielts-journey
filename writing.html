@@ -1,24 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Writing</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IELTS Writing Practice</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fefefe;
+    }
+
+    h1 {
+      font-size: 6vw;
       text-align: center;
-      padding-top: 100px;
+      margin-bottom: 20px;
+    }
+
+    .sentence-block {
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-size: 5vw;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 80px;
+      font-size: 4.5vw;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    button.done-btn {
+      margin-top: 8px;
+      padding: 10px 16px;
+      font-size: 4.5vw;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button.done-btn.clicked {
+      background-color: gray;
+    }
+
+    .progress {
+      text-align: center;
+      font-size: 5vw;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
+    .refresh-btn {
+      display: block;
+      margin: 10px auto 30px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 24px;
+      font-size: 5vw;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    @media (min-width: 600px) {
+      h1 { font-size: 32px; }
+      label { font-size: 20px; }
+      textarea { font-size: 16px; }
+      button.done-btn, .refresh-btn { font-size: 16px; }
+      .progress { font-size: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <h1>IELTS Writing Practice</h1>
-  <p>Here you can write essays, task 1, and grammar notes.</p>
+  <h1>Write 20 sentences with different grammar structures and different academic topics</h1>
 
-  <a href="journey.html">
-    <button style="margin-top: 30px; padding: 10px 20px;">Back</button>
-  </a>
+  <div id="container"></div>
+
+  <div class="progress" id="progress">0/20 Completed</div>
+  <button class="refresh-btn" onclick="resetProgress()">Refresh</button>
+
+  <script>
+    const total = 20;
+    const container = document.getElementById('container');
+    const progressDisplay = document.getElementById('progress');
+    const storageKey = 'writingProgress';
+
+    // Generate 20 boxes
+    for (let i = 1; i <= total; i++) {
+      const block = document.createElement('div');
+      block.className = 'sentence-block';
+
+      const label = document.createElement('label');
+      label.textContent = 'Sentence ' + i;
+
+      const textarea = document.createElement('textarea');
+      textarea.id = `sentence${i}`;
+
+      const button = document.createElement('button');
+      button.className = 'done-btn';
+      button.textContent = 'Done';
+      button.onclick = () => markDone(i);
+
+      block.appendChild(label);
+      block.appendChild(textarea);
+      block.appendChild(button);
+      container.appendChild(block);
+    }
+
+    // Load progress from localStorage
+    function loadProgress() {
+      const completed = JSON.parse(localStorage.getItem(storageKey)) || [];
+      completed.forEach(num => {
+        const btn = document.querySelector(`.done-btn:nth-of-type(${num})`);
+        if (btn) btn.classList.add('clicked');
+      });
+      updateProgress(completed.length);
+    }
+
+    // Update counter
+    function updateProgress(count) {
+      progressDisplay.textContent = `${count}/${total} Completed`;
+    }
+
+    // Mark as done
+    function markDone(num) {
+      const btns = document.querySelectorAll('.done-btn');
+      const btn = btns[num - 1];
+      if (btn.classList.contains('clicked')) return;
+
+      btn.classList.add('clicked');
+
+      let doneList = JSON.parse(localStorage.getItem(storageKey)) || [];
+      if (!doneList.includes(num)) {
+        doneList.push(num);
+        localStorage.setItem(storageKey, JSON.stringify(doneList));
+        updateProgress(doneList.length);
+      }
+    }
+
+    // Reset
+    function resetProgress() {
+      localStorage.removeItem(storageKey);
+      document.querySelectorAll('.done-btn').forEach(btn => btn.classList.remove('clicked'));
+      updateProgress(0);
+    }
+
+    // On load
+    loadProgress();
+  </script>
 
 </body>
 </html>
