@@ -14,8 +14,14 @@
 
     h1 {
       font-size: 7vw;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       color: #222;
+    }
+
+    h2 {
+      font-size: 5.5vw;
+      margin: 10px 0;
+      color: #444;
     }
 
     .block {
@@ -47,17 +53,13 @@
       color: white;
     }
 
-    .read-btn:hover {
-      background-color: #0056b3;
+    .read-btn.clicked {
+      background-color: gray;
     }
 
     .clear-btn {
       background-color: #dc3545;
       color: white;
-    }
-
-    .clear-btn:hover {
-      background-color: #a71d2a;
     }
 
     .back-btn {
@@ -66,38 +68,47 @@
       margin-top: 30px;
     }
 
-    .back-btn:hover {
-      background-color: #495057;
+    .progress {
+      font-size: 5vw;
+      font-weight: bold;
+      margin: 20px auto;
+      color: #333;
     }
 
     @media (min-width: 600px) {
       h1 { font-size: 36px; }
+      h2 { font-size: 22px; }
       input[type="text"], button { font-size: 18px; }
+      .progress { font-size: 20px; }
     }
   </style>
 </head>
 <body>
 
   <h1>IELTS Reading Practice</h1>
+  <div class="progress" id="progress">0/3 Completed</div>
 
   <div class="block">
+    <h2>Reading01</h2>
     <input type="text" id="reading01" placeholder="Paste PDF link here">
     <br>
-    <button class="read-btn" onclick="openPDF('reading01')">Read</button>
+    <button class="read-btn" id="readBtn01" onclick="openPDF('reading01', 'readBtn01', 1)">Read</button>
     <button class="clear-btn" onclick="clearLink('reading01')">Clear</button>
   </div>
 
   <div class="block">
+    <h2>Reading02</h2>
     <input type="text" id="reading02" placeholder="Paste PDF link here">
     <br>
-    <button class="read-btn" onclick="openPDF('reading02')">Read</button>
+    <button class="read-btn" id="readBtn02" onclick="openPDF('reading02', 'readBtn02', 2)">Read</button>
     <button class="clear-btn" onclick="clearLink('reading02')">Clear</button>
   </div>
 
   <div class="block">
+    <h2>Reading03</h2>
     <input type="text" id="reading03" placeholder="Paste PDF link here">
     <br>
-    <button class="read-btn" onclick="openPDF('reading03')">Read</button>
+    <button class="read-btn" id="readBtn03" onclick="openPDF('reading03', 'readBtn03', 3)">Read</button>
     <button class="clear-btn" onclick="clearLink('reading03')">Clear</button>
   </div>
 
@@ -106,20 +117,66 @@
   </a>
 
   <script>
-    function openPDF(id) {
-      const link = document.getElementById(id).value.trim();
-      if (link.endsWith(".pdf")) {
-        window.open(link, "_blank");
-      } else if (link) {
-        alert("Please enter a valid PDF link (must end with .pdf).");
-      } else {
-        alert("Please paste a PDF link first.");
+    // Store button state and timestamp in localStorage
+    const progressEl = document.getElementById('progress');
+    const buttons = ['readBtn01', 'readBtn02', 'readBtn03'];
+    const storageKey = 'readingProgress';
+    const timeKey = 'readingTimestamp';
+
+    function loadProgress() {
+      const saved = JSON.parse(localStorage.getItem(storageKey)) || [];
+      const savedTime = parseInt(localStorage.getItem(timeKey)) || 0;
+      const now = Date.now();
+
+      // Reset after 24 hours
+      if (now - savedTime > 24 * 60 * 60 * 1000) {
+        localStorage.removeItem(storageKey);
+        localStorage.removeItem(timeKey);
+        return;
       }
+
+      let count = 0;
+      saved.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.classList.add('clicked');
+          count++;
+        }
+      });
+
+      updateProgress(count);
     }
 
-    function clearLink(id) {
-      document.getElementById(id).value = "";
+    function updateProgress(count) {
+      progressEl.textContent = `${count}/3 Completed`;
     }
+
+    function openPDF(inputId, btnId, num) {
+      const link = document.getElementById(inputId).value.trim();
+      if (!link || !link.endsWith('.pdf')) {
+        alert("Please enter a valid PDF link ending with .pdf");
+        return;
+      }
+
+      window.open(link, '_blank');
+
+      const clicked = JSON.parse(localStorage.getItem(storageKey)) || [];
+      if (!clicked.includes(btnId)) {
+        clicked.push(btnId);
+        localStorage.setItem(storageKey, JSON.stringify(clicked));
+        localStorage.setItem(timeKey, Date.now().toString());
+      }
+
+      document.getElementById(btnId).classList.add('clicked');
+      updateProgress(clicked.length);
+    }
+
+    function clearLink(inputId) {
+      document.getElementById(inputId).value = "";
+    }
+
+    // On load
+    loadProgress();
   </script>
 
 </body>
