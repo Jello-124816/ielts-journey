@@ -9,24 +9,24 @@
       margin: 0;
       padding: 20px;
       font-family: Arial, sans-serif;
-      background-color: #fefefe;
+      background-color: #fdfdfd;
       text-align: center;
     }
 
     h1 {
       font-size: 7vw;
       color: #222;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
     .btn {
       display: block;
       width: 90%;
-      max-width: 320px;
-      margin: 10px auto;
+      max-width: 340px;
+      margin: 12px auto;
       padding: 14px;
       font-size: 5.5vw;
-      background-color: #007bff;
+      background-color: #dc3545;
       color: white;
       border: none;
       border-radius: 8px;
@@ -35,7 +35,7 @@
     }
 
     .btn:hover {
-      background-color: #0056b3;
+      background-color: #a71d2a;
     }
 
     textarea {
@@ -43,18 +43,28 @@
       width: 90%;
       max-width: 700px;
       height: 200px;
-      margin: 15px auto;
-      padding: 10px;
+      margin: 10px auto;
+      padding: 12px;
       font-size: 4.5vw;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 10px;
       resize: vertical;
     }
 
     @media (min-width: 600px) {
-      h1 { font-size: 36px; }
-      .btn { font-size: 18px; }
-      textarea { font-size: 16px; }
+      h1 {
+        font-size: 36px;
+      }
+
+      .btn {
+        font-size: 18px;
+        padding: 14px;
+      }
+
+      textarea {
+        font-size: 16px;
+        height: 250px;
+      }
     }
 
     .back-btn {
@@ -70,27 +80,27 @@
 
   <h1>IELTS Reading Practice</h1>
 
-  <button class="btn" onclick="toggleTextarea('reading01')">Reading01</button>
-  <textarea id="reading01" placeholder="Paste or type your practice text here..."></textarea>
+  <button class="btn" onclick="toggleText('reading01')">Reading01</button>
+  <textarea id="reading01" placeholder="Paste your text here..."></textarea>
 
-  <button class="btn" onclick="toggleTextarea('reading02')">Reading02</button>
-  <textarea id="reading02" placeholder="Paste or type your practice text here..."></textarea>
+  <button class="btn" onclick="toggleText('reading02')">Reading02</button>
+  <textarea id="reading02" placeholder="Paste your text here..."></textarea>
 
-  <button class="btn" onclick="toggleTextarea('reading03')">Reading03</button>
-  <textarea id="reading03" placeholder="Paste or type your practice text here..."></textarea>
+  <button class="btn" onclick="toggleText('reading03')">Reading03</button>
+  <textarea id="reading03" placeholder="Paste your text here..."></textarea>
 
   <a href="journey.html">
     <button class="btn back-btn">Back to Journey</button>
   </a>
 
   <script>
-    function toggleTextarea(id) {
-      const areas = document.querySelectorAll("textarea");
-      areas.forEach(a => {
-        if (a.id === id) {
-          a.style.display = (a.style.display === "block") ? "none" : "block";
+    function toggleText(id) {
+      const all = document.querySelectorAll('textarea');
+      all.forEach(el => {
+        if (el.id === id) {
+          el.style.display = el.style.display === 'block' ? 'none' : 'block';
         } else {
-          a.style.display = "none";
+          el.style.display = 'none';
         }
       });
     }
