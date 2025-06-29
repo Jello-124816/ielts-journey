@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       background-color: #fffaf2;
       margin: 0;
-      padding-bottom: 140px;
+      padding-bottom: 160px;
     }
 
     h1 {
@@ -99,9 +99,10 @@
 
     .button-row {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: 15px;
       margin-bottom: 5px;
     }
 
@@ -144,6 +145,15 @@
       align-items: center;
       gap: 10px;
     }
+
+    .total-time-btn {
+      background-color: #ffa500;
+      color: white;
+      padding: 10px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -154,8 +164,8 @@
 
   <div id="taskForm">
     <input id="taskName" type="text" placeholder="Name the task" />
-    <input id="taskLink" type="text" placeholder="Paste the video or audio link" />
-    <button class="clear-btn" onclick="document.getElementById('taskLink').value = ''">Clear the link</button>
+    <input id="taskLink" type="text" placeholder="Paste the link" />
+    <button class="clear-btn" onclick="document.getElementById('taskLink').value = ''">Clear</button>
 
     <div class="time-label">Length of the audio or video</div>
     <div class="time-inputs">
@@ -176,6 +186,7 @@
         <span><strong>My progress:</strong></span>
         <div id="progress">0/0</div>
       </div>
+      <button class="total-time-btn" onclick="showTotalTime()">My Total Listening Time</button>
     </div>
   </div>
 
@@ -200,8 +211,8 @@
     function saveTask() {
       const name = document.getElementById("taskName").value.trim();
       const link = document.getElementById("taskLink").value.trim();
-      const min = document.getElementById("minutes").value;
-      const sec = document.getElementById("seconds").value;
+      const min = parseInt(document.getElementById("minutes").value) || 0;
+      const sec = parseInt(document.getElementById("seconds").value) || 0;
 
       if (!name) return alert("Please name the task.");
 
@@ -209,7 +220,8 @@
         id: Date.now(),
         name,
         link,
-        length: `${min || 0} min ${sec || 0} sec`
+        minutes: min,
+        seconds: sec
       };
 
       tasks.unshift(task);
@@ -246,9 +258,11 @@
         const div = document.createElement("div");
         div.className = "task";
 
+        const lengthText = `${task.minutes} min ${task.seconds} sec`;
+
         div.innerHTML = `
           <div class="task-name">${task.name}</div>
-          <div class="task-length">${task.length}</div>
+          <div class="task-length">${lengthText}</div>
           <a href="${task.link}" target="_blank">${task.link}</a><br>
           <button class="btn done-btn ${completed.includes(task.id) ? 'gray' : ''}" onclick="markDone(${task.id})">Done</button>
           <button class="btn delete-btn" onclick="deleteTask(${task.id})">Delete</button>
@@ -258,6 +272,19 @@
       });
 
       updateProgress();
+    }
+
+    function showTotalTime() {
+      let totalSec = 0;
+
+      tasks.forEach(task => {
+        totalSec += (task.minutes * 60) + task.seconds;
+      });
+
+      const totalMin = Math.floor(totalSec / 60);
+      const remainingSec = totalSec % 60;
+
+      alert(`Total Listening Time: ${totalMin} minutes and ${remainingSec} seconds`);
     }
 
     function refreshAll() {
