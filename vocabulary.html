@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vocabulary Practice</title>
   <style>
     body {
@@ -10,6 +10,14 @@
       padding: 20px;
       margin: 0;
       background: #f5f5f5;
+    }
+
+    #vocabCount {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 4vw;
+      color: #333;
     }
 
     h1 {
@@ -22,12 +30,13 @@
       display: flex;
       justify-content: space-around;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     .tab-btn {
       flex: 1;
       padding: 12px;
-      font-size: 5vw;
+      font-size: 4.5vw;
       background-color: #007bff;
       color: white;
       border: none;
@@ -70,99 +79,413 @@
       width: 100%;
     }
 
-    .vocab-list {
+    .vocab-list, .group-list {
       margin-top: 20px;
     }
 
-    .word {
+    .word-entry, .group-entry {
+      background: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .word-header, .group-name {
       font-size: 5vw;
       font-weight: bold;
-      margin-top: 20px;
       color: #333;
+      cursor: pointer;
+    }
+
+    .part-of-speech {
+      font-size: 4vw;
+      color: #555;
+      display: inline-block;
+      margin-left: 10px;
     }
 
     .meaning {
       font-size: 4.2vw;
-      margin-bottom: 10px;
+      margin: 5px 0;
+      color: #444;
+    }
+
+    .extra-info {
+      display: none;
+      font-size: 3.8vw;
       color: #555;
+      margin: 5px 0 10px 10px;
+    }
+
+    .action-btns {
+      margin-top: 5px;
+    }
+
+    .action-btns button {
+      font-size: 3.8vw;
+      padding: 6px 12px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .edit-btn { background-color: orange; color: white; }
+    .delete-btn { background-color: red; color: white; }
+    .plus-btn { background-color: #17a2b8; color: white; }
+    .delete-group-btn { background-color: #dc3545; color: white; margin-top: 8px; }
+
+    .group-popup {
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 4vw;
+      position: relative;
+      z-index: 1;
+    }
+
+    .group-popup div {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .group-popup div:hover {
+      background-color: #f0f0f0;
+    }
+
+    .group-word-item {
+      font-size: 4vw;
+      margin: 6px 0;
+      padding: 6px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
     @media (min-width: 600px) {
+      #vocabCount { font-size: 18px; }
       h1 { font-size: 32px; }
       .tab-btn, .save-btn { font-size: 18px; }
       input[type="text"] { font-size: 16px; }
-      .word { font-size: 20px; }
-      .meaning { font-size: 16px; }
+      .word-header, .group-name { font-size: 20px; }
+      .part-of-speech, .group-word-item { font-size: 16px; }
+      .meaning, .extra-info, .group-popup { font-size: 16px; }
+      .action-btns button, .delete-group-btn { font-size: 14px; }
     }
   </style>
 </head>
 <body>
 
-  <h1>My Vocabulary</h1>
+<div id="vocabCount">📘 Vocabulary Count: 0</div>
+<h1>My Vocabulary</h1>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('add')">Add New Vocabulary</button>
-    <button class="tab-btn" onclick="switchTab('list')">My Vocabulary</button>
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('add')">Add New Vocabulary</button>
+  <button class="tab-btn" onclick="switchTab('list')">My Vocabulary</button>
+  <button class="tab-btn" onclick="switchTab('groups')">Groups</button>
+</div>
+
+<div id="add" class="section active">
+  <div class="input-group">
+    <input type="text" id="newWord" placeholder="Type your new word" />
+    <input type="text" id="newPart" placeholder="Part of speech" />
+    <input type="text" id="newMeaning" placeholder="Type the meaning" />
+    <input type="text" id="newSynonyms" placeholder="Synonyms (optional)" />
+    <input type="text" id="newAntonyms" placeholder="Antonyms (optional)" />
+    <input type="text" id="newCollocations" placeholder="Collocations (optional)" />
   </div>
+  <button class="save-btn" onclick="saveVocab()">Save</button>
+</div>
 
-  <div id="add" class="section active">
-    <div class="input-group">
-      <input type="text" id="newWord" placeholder="Type your new word">
-      <input type="text" id="newMeaning" placeholder="Type the meaning">
-    </div>
-    <button class="save-btn" onclick="saveVocab()">Save</button>
+<div id="list" class="section">
+  <div id="vocabList" class="vocab-list"></div>
+</div>
+
+<div id="groups" class="section">
+  <div class="input-group">
+    <input type="text" id="newGroup" placeholder="Name the group" />
+    <button class="save-btn" onclick="createGroup()">Create Group</button>
   </div>
+  <div id="groupList" class="group-list"></div>
+</div>
 
-  <div id="list" class="section">
-    <div id="vocabList" class="vocab-list"></div>
-  </div>
+<script>
+  const newWordInput = document.getElementById('newWord');
+  const newPartInput = document.getElementById('newPart');
+  const newMeaningInput = document.getElementById('newMeaning');
+  const newSynonymsInput = document.getElementById('newSynonyms');
+  const newAntonymsInput = document.getElementById('newAntonyms');
+  const newCollocationsInput = document.getElementById('newCollocations');
+  const vocabListEl = document.getElementById('vocabList');
+  const vocabCountEl = document.getElementById('vocabCount');
+  const newGroupInput = document.getElementById('newGroup');
+  const groupListEl = document.getElementById('groupList');
 
-  <script>
-    const newWordInput = document.getElementById('newWord');
-    const newMeaningInput = document.getElementById('newMeaning');
-    const vocabListEl = document.getElementById('vocabList');
+  function switchTab(tab) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    const tabs = ['add', 'list', 'groups'];
+    document.querySelectorAll('.tab-btn')[tabs.indexOf(tab)].classList.add('active');
+    if (tab === 'list') displayVocab();
+    if (tab === 'groups') displayGroups();
+  }
 
-    function switchTab(tab) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tab).classList.add('active');
-      document.querySelectorAll('.tab-btn')[tab === 'add' ? 0 : 1].classList.add('active');
-      if (tab === 'list') displayVocab();
+  function updateVocabCount(count) {
+    vocabCountEl.textContent = `📘 Vocabulary Count: ${count}`;
+  }
+
+  function saveVocab() {
+    const word = newWordInput.value.trim();
+    const part = newPartInput.value.trim();
+    const meaning = newMeaningInput.value.trim();
+    const synonyms = newSynonymsInput.value.trim();
+    const antonyms = newAntonymsInput.value.trim();
+    const collocations = newCollocationsInput.value.trim();
+
+    if (!word || !meaning) {
+      alert('Please fill in at least word and meaning.');
+      return;
     }
 
-    function saveVocab() {
-      const word = newWordInput.value.trim();
-      const meaning = newMeaningInput.value.trim();
-      if (!word || !meaning) {
-        alert('Please fill in both fields.');
-        return;
-      }
+    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+    vocabData.push({ word, part, meaning, synonyms, antonyms, collocations });
+    localStorage.setItem('vocabList', JSON.stringify(vocabData));
 
-      const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
-      vocabData.push({ word, meaning });
+    newWordInput.value = '';
+    newPartInput.value = '';
+    newMeaningInput.value = '';
+    newSynonymsInput.value = '';
+    newAntonymsInput.value = '';
+    newCollocationsInput.value = '';
+
+    alert('Saved successfully!');
+    updateVocabCount(vocabData.length);
+  }
+
+  function displayVocab() {
+    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+    updateVocabCount(vocabData.length);
+    vocabListEl.innerHTML = '';
+
+    vocabData.forEach((entry, index) => {
+      const container = document.createElement('div');
+      container.className = 'word-entry';
+
+      const header = document.createElement('div');
+      header.className = 'word-header';
+      header.textContent = entry.word;
+
+      const pos = document.createElement('span');
+      pos.className = 'part-of-speech';
+      pos.textContent = entry.part ? `(${entry.part})` : '';
+      header.appendChild(pos);
+
+      const meaning = document.createElement('div');
+      meaning.className = 'meaning';
+      meaning.textContent = entry.meaning;
+
+      const extra = document.createElement('div');
+      extra.className = 'extra-info';
+
+      if (entry.synonyms)
+        extra.innerHTML += `<div><strong>Synonyms:</strong> ${entry.synonyms}</div>`;
+      if (entry.antonyms)
+        extra.innerHTML += `<div><strong>Antonyms:</strong> ${entry.antonyms}</div>`;
+      if (entry.collocations)
+        extra.innerHTML += `<div><strong>Collocations:</strong> ${entry.collocations}</div>`;
+
+      header.onclick = () => {
+        extra.style.display = (extra.style.display === 'block') ? 'none' : 'block';
+      };
+
+      const buttons = document.createElement('div');
+      buttons.className = 'action-btns';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => editVocab(index);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.onclick = () => deleteVocab(index);
+
+      const plusBtn = document.createElement('button');
+      plusBtn.className = 'plus-btn';
+      plusBtn.textContent = '+';
+      plusBtn.onclick = () => showGroupPopup(container, entry);
+
+      buttons.appendChild(editBtn);
+      buttons.appendChild(deleteBtn);
+      buttons.appendChild(plusBtn);
+
+      container.appendChild(header);
+      container.appendChild(meaning);
+      container.appendChild(extra);
+      container.appendChild(buttons);
+
+      vocabListEl.appendChild(container);
+    });
+  }
+
+  function showGroupPopup(container, word) {
+    document.querySelectorAll('.group-popup').forEach(p => p.remove());
+
+    const groups = JSON.parse(localStorage.getItem('vocabGroups')) || [];
+    if (groups.length === 0) {
+      alert("No groups found. Please create a group first.");
+      return;
+    }
+
+    const popup = document.createElement('div');
+    popup.className = 'group-popup';
+
+    groups.forEach((group, i) => {
+      const item = document.createElement('div');
+      item.textContent = group.name;
+      item.onclick = () => {
+        groups[i].words = groups[i].words || [];
+        groups[i].words.push(word);
+        localStorage.setItem('vocabGroups', JSON.stringify(groups));
+        popup.remove();
+        alert(`Added to group "${group.name}"`);
+      };
+      popup.appendChild(item);
+    });
+
+    container.appendChild(popup);
+  }
+
+  function editVocab(index) {
+    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+    const entry = vocabData[index];
+    newWordInput.value = entry.word;
+    newPartInput.value = entry.part;
+    newMeaningInput.value = entry.meaning;
+    newSynonymsInput.value = entry.synonyms || '';
+    newAntonymsInput.value = entry.antonyms || '';
+    newCollocationsInput.value = entry.collocations || '';
+    vocabData.splice(index, 1);
+    localStorage.setItem('vocabList', JSON.stringify(vocabData));
+    updateVocabCount(vocabData.length);
+    switchTab('add');
+  }
+
+  function deleteVocab(index) {
+    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+    if (confirm("Delete this word?")) {
+      vocabData.splice(index, 1);
       localStorage.setItem('vocabList', JSON.stringify(vocabData));
-      newWordInput.value = '';
-      newMeaningInput.value = '';
-      alert('Saved successfully!');
+      updateVocabCount(vocabData.length);
+      displayVocab();
+    }
+  }
+
+  function createGroup() {
+    const name = newGroupInput.value.trim();
+    if (!name) {
+      alert("Group name cannot be empty.");
+      return;
     }
 
-    function displayVocab() {
-      const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
-      vocabListEl.innerHTML = '';
-      vocabData.forEach(entry => {
-        const wordEl = document.createElement('div');
-        wordEl.className = 'word';
-        wordEl.textContent = entry.word;
+    const groupData = JSON.parse(localStorage.getItem('vocabGroups')) || [];
+    groupData.unshift({ name, words: [] });
+    localStorage.setItem('vocabGroups', JSON.stringify(groupData));
+    newGroupInput.value = '';
+    displayGroups();
+  }
 
-        const meaningEl = document.createElement('div');
-        meaningEl.className = 'meaning';
-        meaningEl.textContent = entry.meaning;
+  function deleteGroup(index) {
+    const groupData = JSON.parse(localStorage.getItem('vocabGroups')) || [];
+    if (confirm(`Delete group "${groupData[index].name}"?`)) {
+      groupData.splice(index, 1);
+      localStorage.setItem('vocabGroups', JSON.stringify(groupData));
+      displayGroups();
+    }
+  }
 
-        vocabListEl.appendChild(wordEl);
-        vocabListEl.appendChild(meaningEl);
+  function displayGroups() {
+    const groupData = JSON.parse(localStorage.getItem('vocabGroups')) || [];
+    groupListEl.innerHTML = '';
+
+    groupData.forEach((group, index) => {
+      const groupEl = document.createElement('div');
+      groupEl.className = 'group-entry';
+
+      const groupName = document.createElement('div');
+      groupName.className = 'group-name';
+      groupName.textContent = group.name;
+
+      const groupWords = document.createElement('div');
+      groupWords.className = 'group-words';
+      groupWords.style.display = 'none';
+
+      groupName.onclick = () => {
+        groupWords.style.display = groupWords.style.display === 'block' ? 'none' : 'block';
+      };
+
+      (group.words || []).forEach((word, wordIndex) => {
+        const item = document.createElement('div');
+        item.className = 'group-word-item';
+        item.innerHTML = `<strong>${word.word}</strong> (${word.part || '—'})<br>${word.meaning}`;
+
+        const extra = document.createElement('div');
+        extra.className = 'extra-info';
+        extra.style.display = 'none';
+
+        if (word.synonyms)
+          extra.innerHTML += `<div><strong>Synonyms:</strong> ${word.synonyms}</div>`;
+        if (word.antonyms)
+          extra.innerHTML += `<div><strong>Antonyms:</strong> ${word.antonyms}</div>`;
+        if (word.collocations)
+          extra.innerHTML += `<div><strong>Collocations:</strong> ${word.collocations}</div>`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'Remove from group';
+        removeBtn.style.marginTop = '10px';
+        removeBtn.style.backgroundColor = '#dc3545';
+        removeBtn.style.color = 'white';
+        removeBtn.style.border = 'none';
+        removeBtn.style.padding = '6px 10px';
+        removeBtn.style.borderRadius = '6px';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.onclick = () => {
+          group.words.splice(wordIndex, 1);
+          localStorage.setItem('vocabGroups', JSON.stringify(groupData));
+          displayGroups();
+        };
+
+        extra.appendChild(removeBtn);
+
+        item.onclick = () => {
+          extra.style.display = extra.style.display === 'block' ? 'none' : 'block';
+        };
+
+        groupWords.appendChild(item);
+        groupWords.appendChild(extra);
       });
-    }
-  </script>
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-group-btn';
+      deleteBtn.textContent = 'Delete Group';
+      deleteBtn.onclick = () => deleteGroup(index);
+
+      groupEl.appendChild(groupName);
+      groupEl.appendChild(groupWords);
+      groupEl.appendChild(deleteBtn);
+      groupListEl.appendChild(groupEl);
+    });
+  }
+
+  updateVocabCount(JSON.parse(localStorage.getItem('vocabList'))?.length || 0);
+</script>
 
 </body>
 </html>
