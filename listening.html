@@ -2,224 +2,273 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>IELTS Listening Practice</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listening Tasks</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      background-color: #f9f9f9;
+      background-color: #fffaf2;
+      margin: 0;
+      padding-bottom: 140px;
     }
 
     h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-      color: #333;
+      text-align: center;
+      font-size: 6.5vw;
+      margin: 20px 0;
     }
 
-    .section {
-      margin-bottom: 20px;
+    #taskForm {
+      display: none;
+      background: #f0f8ff;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 0 10px 20px;
     }
 
-    .tedlink {
-      display: block;
+    input[type="text"], input[type="number"] {
       width: 100%;
-      max-width: 400px;
-      margin: 0 auto 10px;
-      padding: 12px 0;
-      background-color: #e62b1e;
-      color: white;
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px 0 10px;
+    }
+
+    .time-label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .time-inputs {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .task {
+      background: #d1e7ff;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 0 10px 10px;
+    }
+
+    .task-name {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .task-length {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      font-size: 16px;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
+      margin: 5px 5px 0 0;
     }
 
-    .tedlink.clicked {
-      background-color: #888;
+    .done-btn {
+      background-color: #ff4d4d;
+      color: white;
     }
 
-    input[type="text"] {
+    .done-btn.gray {
+      background-color: gray;
+    }
+
+    .delete-btn {
+      background-color: #999;
+      color: white;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
       width: 100%;
-      max-width: 400px;
-      margin: 5px auto;
-      padding: 10px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      display: block;
+      background: #ffffff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
     }
 
-    .saveBtn, .clearBtn {
-      display: inline-block;
-      margin: 5px;
-      padding: 8px 16px;
+    .button-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 5px;
+    }
+
+    .add-btn {
+      font-size: 28px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+
+    .refresh-btn {
+      background-color: green;
+      color: white;
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    #progress {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .clear-btn {
+      background: #888;
+      color: white;
+      padding: 6px 10px;
       font-size: 14px;
       border: none;
       border-radius: 4px;
-      color: white;
-      cursor: pointer;
+      margin-bottom: 10px;
     }
 
-    .saveBtn {
-      background-color: #007bff;
-    }
-
-    .saveBtn:hover {
-      background-color: #0056b3;
-    }
-
-    .clearBtn {
-      background-color: #dc3545;
-    }
-
-    .clearBtn:hover {
-      background-color: #b52a37;
-    }
-
-    .progress {
-      margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .btn-row {
-      margin-top: 25px;
-    }
-
-    .btn-row button {
-      margin: 10px 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .btn-row a button {
-      background-color: #888;
-    }
-
-    .btn-row a button:hover {
-      background-color: #555;
-    }
-
-    #refreshBtn {
-      background-color: #28a745;
-    }
-
-    #refreshBtn:hover {
-      background-color: #1e7e34;
+    .progress-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   </style>
 </head>
 <body>
 
-  <h1>IELTS Listening Practice</h1>
+  <h1>Listening Tasks</h1>
 
-  <!-- Listening Sections -->
-  <div id="sections"></div>
+  <div id="tasksContainer"></div>
 
-  <!-- Progress Display -->
-  <div class="progress" id="progressCounter">0/3 completed</div>
+  <div id="taskForm">
+    <input id="taskName" type="text" placeholder="Name the task" />
+    <input id="taskLink" type="text" placeholder="Paste the video or audio link" />
+    <button class="clear-btn" onclick="document.getElementById('taskLink').value = ''">Clear the link</button>
 
-  <!-- Navigation Buttons -->
-  <div class="btn-row">
-    <a href="journey.html"><button>Back</button></a>
-    <button id="refreshBtn">Refresh</button>
+    <div class="time-label">Length of the audio or video</div>
+    <div class="time-inputs">
+      <input type="number" id="minutes" placeholder="Minutes" min="0" />
+      <input type="number" id="seconds" placeholder="Seconds" min="0" />
+    </div>
+
+    <button class="btn" onclick="saveTask()">Save</button>
+    <button class="btn" onclick="hideForm()">Back</button>
+  </div>
+
+  <!-- BOTTOM BUTTON BAR -->
+  <div class="bottom-bar">
+    <div class="button-row">
+      <button class="add-btn" onclick="showForm()">+</button>
+      <button class="refresh-btn" onclick="refreshAll()">Refresh</button>
+      <div class="progress-group">
+        <span><strong>My progress:</strong></span>
+        <div id="progress">0/0</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const sectionIds = ['listening01', 'listening02', 'listening03'];
-
-    function createSection(id, index) {
-      const container = document.createElement('div');
-      container.className = 'section';
-
-      const linkBtn = document.createElement('button');
-      linkBtn.className = 'tedlink';
-      linkBtn.id = id;
-      linkBtn.textContent = 'Listening' + (index + 1);
-
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Change video link here';
-      input.value = localStorage.getItem('link_' + id) || '';
-
-      const saveBtn = document.createElement('button');
-      saveBtn.className = 'saveBtn';
-      saveBtn.textContent = 'Save';
-
-      const clearBtn = document.createElement('button');
-      clearBtn.className = 'clearBtn';
-      clearBtn.textContent = 'Clear Link';
-
-      if (localStorage.getItem('clicked_' + id) === 'true') {
-        linkBtn.classList.add('clicked');
-      }
-
-      linkBtn.addEventListener('click', () => {
-        const savedLink = localStorage.getItem('link_' + id);
-        if (savedLink) {
-          window.open(savedLink, '_blank');
-          localStorage.setItem('clicked_' + id, 'true');
-          linkBtn.classList.add('clicked');
-          updateProgress();
-        } else {
-          alert('Please enter and save a video link first.');
-        }
-      });
-
-      saveBtn.addEventListener('click', () => {
-        if (input.value.trim() !== '') {
-          localStorage.setItem('link_' + id, input.value.trim());
-          alert('Link saved!');
-        }
-      });
-
-      clearBtn.addEventListener('click', () => {
-        localStorage.removeItem('link_' + id);
-        input.value = '';
-        alert('Link cleared!');
-      });
-
-      container.appendChild(linkBtn);
-      container.appendChild(input);
-      container.appendChild(saveBtn);
-      container.appendChild(clearBtn);
-
-      return container;
-    }
+    let tasks = JSON.parse(localStorage.getItem("listeningTasks")) || [];
+    let completed = JSON.parse(localStorage.getItem("listeningCompleted")) || [];
 
     function updateProgress() {
-      const completed = sectionIds.filter(id => localStorage.getItem('clicked_' + id) === 'true').length;
-      document.getElementById('progressCounter').textContent = `${completed}/3 completed`;
+      const total = tasks.length;
+      const done = completed.length;
+      document.getElementById("progress").textContent = `${done}/${total}`;
     }
 
-    function resetProgress() {
-      sectionIds.forEach(id => {
-        localStorage.removeItem('clicked_' + id);
-        const btn = document.getElementById(id);
-        if (btn) btn.classList.remove('clicked');
+    function showForm() {
+      document.getElementById("taskForm").style.display = "block";
+    }
+
+    function hideForm() {
+      document.getElementById("taskForm").style.display = "none";
+    }
+
+    function saveTask() {
+      const name = document.getElementById("taskName").value.trim();
+      const link = document.getElementById("taskLink").value.trim();
+      const min = document.getElementById("minutes").value;
+      const sec = document.getElementById("seconds").value;
+
+      if (!name) return alert("Please name the task.");
+
+      const task = {
+        id: Date.now(),
+        name,
+        link,
+        length: `${min || 0} min ${sec || 0} sec`
+      };
+
+      tasks.unshift(task);
+      localStorage.setItem("listeningTasks", JSON.stringify(tasks));
+      displayTasks();
+      hideForm();
+      document.getElementById("taskName").value = "";
+      document.getElementById("taskLink").value = "";
+      document.getElementById("minutes").value = "";
+      document.getElementById("seconds").value = "";
+    }
+
+    function markDone(id) {
+      if (!completed.includes(id)) {
+        completed.push(id);
+        localStorage.setItem("listeningCompleted", JSON.stringify(completed));
+        displayTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(task => task.id !== id);
+      completed = completed.filter(cid => cid !== id);
+      localStorage.setItem("listeningTasks", JSON.stringify(tasks));
+      localStorage.setItem("listeningCompleted", JSON.stringify(completed));
+      displayTasks();
+    }
+
+    function displayTasks() {
+      const container = document.getElementById("tasksContainer");
+      container.innerHTML = "";
+
+      tasks.forEach(task => {
+        const div = document.createElement("div");
+        div.className = "task";
+
+        div.innerHTML = `
+          <div class="task-name">${task.name}</div>
+          <div class="task-length">${task.length}</div>
+          <a href="${task.link}" target="_blank">${task.link}</a><br>
+          <button class="btn done-btn ${completed.includes(task.id) ? 'gray' : ''}" onclick="markDone(${task.id})">Done</button>
+          <button class="btn delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+        `;
+
+        container.appendChild(div);
       });
+
       updateProgress();
     }
 
-    // Initialize
-    window.onload = () => {
-      const container = document.getElementById('sections');
-      sectionIds.forEach((id, i) => {
-        const section = createSection(id, i);
-        container.appendChild(section);
-      });
+    function refreshAll() {
+      localStorage.removeItem("listeningTasks");
+      localStorage.removeItem("listeningCompleted");
+      tasks = [];
+      completed = [];
+      displayTasks();
+    }
 
-      updateProgress();
-      document.getElementById('refreshBtn').addEventListener('click', resetProgress);
-    };
+    window.onload = displayTasks;
   </script>
 
 </body>
