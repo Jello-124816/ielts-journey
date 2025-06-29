@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My IELTS Journey</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
+      padding: 0;
       height: 100vh;
       display: flex;
       justify-content: center;
@@ -13,26 +19,41 @@
       flex-direction: column;
       background-color: #f0f8ff;
       font-family: Arial, sans-serif;
+      text-align: center;
     }
 
     h1 {
-      font-size: 40px;
+      font-size: 8vw; /* responsive font size */
       color: #333;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      max-width: 90%;
     }
 
     a button {
-      padding: 12px 30px;
-      font-size: 18px;
+      padding: 14px 30px;
+      font-size: 5vw; /* responsive button size */
+      max-width: 80%;
       background-color: #007bff;
       color: white;
       border: none;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 6px;
     }
 
     a button:hover {
       background-color: #0056b3;
+    }
+
+    @media (min-width: 500px) {
+      h1 {
+        font-size: 40px;
+      }
+
+      a button {
+        font-size: 18px;
+        padding: 12px 30px;
+        max-width: unset;
+      }
     }
   </style>
 </head>
