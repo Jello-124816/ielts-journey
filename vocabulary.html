@@ -12,13 +12,17 @@
       background: #f5f5f5;
     }
 
+  /* -.- Vocabulary Count */
+
     #vocabCount {
       position: absolute;
       top: 10px;
-      left: 10px;
-      font-size: 4vw;
+      right: 10px;
+      font-size: 3vw;
       color: #333;
     }
+
+  /* -.- Page Title */  
 
     h1 {
       text-align: center;
@@ -26,13 +30,14 @@
       margin-bottom: 20px;
     }
 
+  /* -.- Tab Styles */  
+
     .tabs {
       display: flex;
       justify-content: space-around;
       margin-bottom: 20px;
       flex-wrap: wrap;
     }
-
     .tab-btn {
       flex: 1;
       padding: 12px;
@@ -42,23 +47,25 @@
       border: none;
       cursor: pointer;
     }
-
     .tab-btn.active {
       background-color: #0056b3;
     }
 
+    
+  /* -.- Section Visibility */
+
     .section {
       display: none;
     }
-
     .section.active {
       display: block;
     }
+  
+  /* -.- Input Group */
 
     .input-group {
       margin-bottom: 15px;
     }
-
     input[type="text"] {
       width: 100%;
       padding: 12px;
@@ -67,7 +74,6 @@
       border: 1px solid #ccc;
       margin-bottom: 10px;
     }
-
     button.save-btn {
       background-color: #28a745;
       color: white;
@@ -79,9 +85,13 @@
       width: 100%;
     }
 
+  /* -.- Vocabulary & Group Lists */
+
     .vocab-list, .group-list {
       margin-top: 20px;
     }
+
+  /* -.- Word & Group Entries */
 
     .word-entry, .group-entry {
       background: #fff;
@@ -91,38 +101,32 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       position: relative;
     }
-
     .word-header, .group-name {
       font-size: 5vw;
       font-weight: bold;
       color: #333;
       cursor: pointer;
     }
-
     .part-of-speech {
       font-size: 4vw;
       color: #555;
       display: inline-block;
       margin-left: 10px;
     }
-
     .meaning {
       font-size: 4.2vw;
       margin: 5px 0;
       color: #444;
     }
-
     .extra-info {
       display: none;
       font-size: 3.8vw;
       color: #555;
       margin: 5px 0 10px 10px;
     }
-
     .action-btns {
       margin-top: 5px;
     }
-
     .action-btns button {
       font-size: 3.8vw;
       padding: 6px 12px;
@@ -131,11 +135,12 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     .edit-btn { background-color: orange; color: white; }
     .delete-btn { background-color: red; color: white; }
     .plus-btn { background-color: #17a2b8; color: white; }
     .delete-group-btn { background-color: #dc3545; color: white; margin-top: 8px; }
+
+  /* -.- Group Popup */
 
     .group-popup {
       background: #ffffff;
@@ -148,15 +153,15 @@
       position: relative;
       z-index: 1;
     }
-
     .group-popup div {
       padding: 5px;
       cursor: pointer;
     }
-
     .group-popup div:hover {
       background-color: #f0f0f0;
     }
+
+  /* -.- Group Word Item */
 
     .group-word-item {
       font-size: 4vw;
@@ -167,10 +172,11 @@
       cursor: pointer;
     }
 
+   /* -.- Responsive for Desktop */
     @media (min-width: 600px) {
-      #vocabCount { font-size: 18px; }
+      #vocabCount { font-size: 25px; }
       h1 { font-size: 32px; }
-      .tab-btn, .save-btn { font-size: 18px; }
+      .tab-btn, .save-btn { font-size: 15px; }
       input[type="text"] { font-size: 16px; }
       .word-header, .group-name { font-size: 20px; }
       .part-of-speech, .group-word-item { font-size: 16px; }
@@ -181,14 +187,33 @@
 </head>
 <body>
 
-<div id="vocabCount">📘 Vocabulary Count: 0</div>
+  <!-- -.- Top Bar -->
+
+<!-- -.- Back Button (Top-Left) -->
+<button onclick="history.back()" 
+        style="position: absolute; top: 10px; left: 10px; font-size: 2vw; padding: 6px 12px; background-color: #666; color: white; border: none; border-radius: 8px; cursor: pointer; z-index: 10;">
+  Back
+</button>
+
+<!-- -.- Vocabulary Count (Top-Right) -->
+<div id="vocabCount"
+     style="position: absolute; top: 10px; right: 10px; color: #333; z-index: 10;">
+  📘 Vocabulary Count: 0
+</div>
+
+<!-- -.- Page Title -->
 <h1>My Vocabulary</h1>
+
+
+  <!-- -.- Tabs -->
 
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('add')">Add New Vocabulary</button>
   <button class="tab-btn" onclick="switchTab('list')">My Vocabulary</button>
   <button class="tab-btn" onclick="switchTab('groups')">Groups</button>
 </div>
+
+  <!-- -.- Add Vocabulary Section -->
 
 <div id="add" class="section active">
   <div class="input-group">
@@ -202,9 +227,13 @@
   <button class="save-btn" onclick="saveVocab()">Save</button>
 </div>
 
+  <!-- -.- Vocabulary List Section -->
+
 <div id="list" class="section">
   <div id="vocabList" class="vocab-list"></div>
 </div>
+
+  <!-- -.- Groups Section -->
 
 <div id="groups" class="section">
   <div class="input-group">
@@ -213,6 +242,8 @@
   </div>
   <div id="groupList" class="group-list"></div>
 </div>
+
+  <!-- -.- Scripts -->
 
 <script>
   const newWordInput = document.getElementById('newWord');
