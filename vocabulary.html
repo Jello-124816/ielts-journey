@@ -22,6 +22,22 @@
       color: #333;
     }
 
+    /* -.- Back Button Styles */
+.back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 4vw;
+  padding: 6px 12px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+
   /* -.- Page Title */  
 
     h1 {
@@ -175,6 +191,10 @@
    /* -.- Responsive for Desktop */
     @media (min-width: 600px) {
       #vocabCount { font-size: 25px; }
+      .back-btn {
+      font-size: 16px;
+      padding: 8px 14px;
+      }
       h1 { font-size: 32px; }
       .tab-btn, .save-btn { font-size: 15px; }
       input[type="text"] { font-size: 16px; }
@@ -190,10 +210,10 @@
   <!-- -.- Top Bar -->
 
 <!-- -.- Back Button (Top-Left) -->
-<button onclick="history.back()" 
-        style="position: absolute; top: 10px; left: 10px; font-size: 2vw; padding: 6px 12px; background-color: #666; color: white; border: none; border-radius: 8px; cursor: pointer; z-index: 10;">
+<button class="back-btn" onclick="history.back()">
   Back
 </button>
+
 
 <!-- -.- Vocabulary Count (Top-Right) -->
 <div id="vocabCount"
