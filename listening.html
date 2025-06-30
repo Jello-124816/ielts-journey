@@ -22,7 +22,7 @@
 
     .top-bar h1 {
       margin: 0 auto;
-      font-size: 5.5vw;
+      font-size: 6vw;
       text-align: center;
       flex-grow: 1;
     }
@@ -31,7 +31,7 @@
     .refresh-btn {
       background-color: #666;
       color: white;
-      padding: 10px 12px;
+      padding: 2vw 3vw;
       font-size: 4.5vw;
       border: none;
       border-radius: 8px;
@@ -170,6 +170,38 @@
     #progress {
       font-size: 5vw;
       font-weight: bold;
+    }
+
+    /* Desktop view adjustments */
+    @media (min-width: 768px) {
+      .top-bar h1 {
+        font-size: 32px;
+      }
+      .back-btn,
+      .refresh-btn {
+        font-size: 18px;
+        padding: 10px 16px;
+      }
+      .btn {
+        font-size: 16px;
+        padding: 10px 15px;
+      }
+      .task-name {
+        font-size: 18px;
+      }
+      .task-length,
+      .total-time-btn,
+      .clear-btn {
+        font-size: 14px;
+      }
+      .add-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+      }
+      #progress {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
