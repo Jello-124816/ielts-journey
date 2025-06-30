@@ -89,7 +89,7 @@
       border-radius: 8px;
       border: 1px solid #ccc;
       margin-bottom: 10px;
-      margin-left: -1px;
+      margin-left: -2.1px;
       
     }
     button.save-btn {
@@ -270,6 +270,7 @@
 </button>
 
 
+
 </div>
   
   <!-- -.- Vocabulary List Section -->
@@ -284,9 +285,14 @@
   <div class="input-group">
     <input type="text" id="newGroup" placeholder="Name the group" />
     <button class="save-btn" onclick="createGroup()">Create Group</button>
+
+    
+    <input type="text" id="groupSearch" placeholder="Search the group..." style="width: 98%; margin-top: 10px; padding: 12px; font-size: 2vw; border-radius: 8px; border: 1px solid #ccc;">
   </div>
+
   <div id="groupList" class="group-list"></div>
 </div>
+
 
   <!-- -.- Scripts -->
 
@@ -381,71 +387,106 @@ function clearForm() {
 
 
   function displayVocab() {
-    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
-    updateVocabCount(vocabData.length);
-    vocabListEl.innerHTML = '';
+  const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+  updateVocabCount(vocabData.length);
+  vocabListEl.innerHTML = '';
 
-    vocabData.forEach((entry, index) => {
-      const container = document.createElement('div');
-      container.className = 'word-entry';
+  vocabData.forEach((entry, index) => {
+    const container = document.createElement('div');
+    container.className = 'word-entry';
 
-      const header = document.createElement('div');
-      header.className = 'word-header';
-      header.textContent = entry.word;
+    const header = document.createElement('div');
+    header.className = 'word-header';
+    header.textContent = entry.word;
 
-      const pos = document.createElement('span');
-      pos.className = 'part-of-speech';
-      pos.textContent = entry.part ? `(${entry.part})` : '';
-      header.appendChild(pos);
+    const pos = document.createElement('span');
+    pos.className = 'part-of-speech';
+    pos.textContent = entry.part ? `(${entry.part})` : '';
+    header.appendChild(pos);
 
-      const meaning = document.createElement('div');
-      meaning.className = 'meaning';
-      meaning.textContent = entry.meaning;
+    const meaning = document.createElement('div');
+    meaning.className = 'meaning';
+    meaning.textContent = entry.meaning;
+    meaning.style.display = 'none';
 
-      const extra = document.createElement('div');
-      extra.className = 'extra-info';
+    const extra = document.createElement('div');
+    extra.className = 'extra-info';
+    extra.style.display = 'none';
 
-      if (entry.synonyms)
-        extra.innerHTML += `<div><strong>Synonyms:</strong> ${entry.synonyms}</div>`;
-      if (entry.antonyms)
-        extra.innerHTML += `<div><strong>Antonyms:</strong> ${entry.antonyms}</div>`;
-      if (entry.collocations)
-        extra.innerHTML += `<div><strong>Collocations:</strong> ${entry.collocations}</div>`;
+    if (entry.synonyms)
+      extra.innerHTML += `<div><strong>Synonyms:</strong> ${entry.synonyms}</div>`;
+    if (entry.antonyms)
+      extra.innerHTML += `<div><strong>Antonyms:</strong> ${entry.antonyms}</div>`;
+    if (entry.collocations)
+      extra.innerHTML += `<div><strong>Collocations:</strong> ${entry.collocations}</div>`;
 
-      header.onclick = () => {
-        extra.style.display = (extra.style.display === 'block') ? 'none' : 'block';
-      };
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Close';
+    closeBtn.style.marginTop = '10px';
+    closeBtn.style.backgroundColor = '#888';
+    closeBtn.style.color = 'white';
+    closeBtn.style.border = 'none';
+    closeBtn.style.padding = '6px 10px';
+    closeBtn.style.borderRadius = '6px';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.display = 'none';
 
-      const buttons = document.createElement('div');
-      buttons.className = 'action-btns';
+    let clickStage = 0;
 
-      const editBtn = document.createElement('button');
-      editBtn.className = 'edit-btn';
-      editBtn.textContent = 'Edit';
-      editBtn.onclick = () => editVocab(index);
+    header.onclick = () => {
+      if (clickStage === 0) {
+        meaning.style.display = 'block';
+        extra.style.display = 'none';
+        closeBtn.style.display = 'none';
+        clickStage = 1;
+      } else if (clickStage === 1) {
+        extra.style.display = 'block';
+        closeBtn.style.display = 'inline-block';
+        clickStage = 2;
+      }
+    };
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.onclick = () => deleteVocab(index);
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      meaning.style.display = 'none';
+      extra.style.display = 'none';
+      closeBtn.style.display = 'none';
+      clickStage = 0;
+    };
 
-      const plusBtn = document.createElement('button');
-      plusBtn.className = 'plus-btn';
-      plusBtn.textContent = '+';
-      plusBtn.onclick = () => showGroupPopup(container, entry);
+    extra.appendChild(closeBtn);
 
-      buttons.appendChild(editBtn);
-      buttons.appendChild(deleteBtn);
-      buttons.appendChild(plusBtn);
+    const buttons = document.createElement('div');
+    buttons.className = 'action-btns';
 
-      container.appendChild(header);
-      container.appendChild(meaning);
-      container.appendChild(extra);
-      container.appendChild(buttons);
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => editVocab(index);
 
-      vocabListEl.appendChild(container);
-    });
-  }
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = () => deleteVocab(index);
+
+    const plusBtn = document.createElement('button');
+    plusBtn.className = 'plus-btn';
+    plusBtn.textContent = '+';
+    plusBtn.onclick = () => showGroupPopup(container, entry);
+
+    buttons.appendChild(editBtn);
+    buttons.appendChild(deleteBtn);
+    buttons.appendChild(plusBtn);
+
+    container.appendChild(header);
+    container.appendChild(meaning);
+    container.appendChild(extra);
+    container.appendChild(buttons);
+
+    vocabListEl.appendChild(container);
+  });
+}
+
 
   function showGroupPopup(container, word) {
     document.querySelectorAll('.group-popup').forEach(p => p.remove());
@@ -527,79 +568,84 @@ function clearForm() {
   }
 
   function displayGroups() {
-    const groupData = JSON.parse(localStorage.getItem('vocabGroups')) || [];
-    groupListEl.innerHTML = '';
+  const groupData = JSON.parse(localStorage.getItem('vocabGroups')) || [];
+  const filter = document.getElementById('groupSearch')?.value?.toLowerCase() || '';
+  groupListEl.innerHTML = '';
 
-    groupData.forEach((group, index) => {
-      const groupEl = document.createElement('div');
-      groupEl.className = 'group-entry';
+  groupData.forEach((group, index) => {
+    if (!group.name.toLowerCase().includes(filter)) return; // filter by name
 
-      const groupName = document.createElement('div');
-      groupName.className = 'group-name';
-      groupName.textContent = group.name;
+    const groupEl = document.createElement('div');
+    groupEl.className = 'group-entry';
 
-      const groupWords = document.createElement('div');
-      groupWords.className = 'group-words';
-      groupWords.style.display = 'none';
+    const groupName = document.createElement('div');
+    groupName.className = 'group-name';
+    groupName.textContent = group.name;
 
-      groupName.onclick = () => {
-        groupWords.style.display = groupWords.style.display === 'block' ? 'none' : 'block';
+    const groupWords = document.createElement('div');
+    groupWords.className = 'group-words';
+    groupWords.style.display = 'none';
+
+    groupName.onclick = () => {
+      groupWords.style.display = groupWords.style.display === 'block' ? 'none' : 'block';
+    };
+
+    (group.words || []).forEach((word, wordIndex) => {
+      const item = document.createElement('div');
+      item.className = 'group-word-item';
+      item.innerHTML = `<strong>${word.word}</strong> (${word.part || '—'})<br>${word.meaning}`;
+
+      const extra = document.createElement('div');
+      extra.className = 'extra-info';
+      extra.style.display = 'none';
+
+      if (word.synonyms)
+        extra.innerHTML += `<div><strong>Synonyms:</strong> ${word.synonyms}</div>`;
+      if (word.antonyms)
+        extra.innerHTML += `<div><strong>Antonyms:</strong> ${word.antonyms}</div>`;
+      if (word.collocations)
+        extra.innerHTML += `<div><strong>Collocations:</strong> ${word.collocations}</div>`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove from group';
+      removeBtn.style.marginTop = '10px';
+      removeBtn.style.backgroundColor = '#dc3545';
+      removeBtn.style.color = 'white';
+      removeBtn.style.border = 'none';
+      removeBtn.style.padding = '6px 10px';
+      removeBtn.style.borderRadius = '6px';
+      removeBtn.style.cursor = 'pointer';
+      removeBtn.onclick = () => {
+        group.words.splice(wordIndex, 1);
+        localStorage.setItem('vocabGroups', JSON.stringify(groupData));
+        displayGroups();
       };
 
-      (group.words || []).forEach((word, wordIndex) => {
-        const item = document.createElement('div');
-        item.className = 'group-word-item';
-        item.innerHTML = `<strong>${word.word}</strong> (${word.part || '—'})<br>${word.meaning}`;
+      extra.appendChild(removeBtn);
 
-        const extra = document.createElement('div');
-        extra.className = 'extra-info';
-        extra.style.display = 'none';
+      item.onclick = () => {
+        extra.style.display = extra.style.display === 'block' ? 'none' : 'block';
+      };
 
-        if (word.synonyms)
-          extra.innerHTML += `<div><strong>Synonyms:</strong> ${word.synonyms}</div>`;
-        if (word.antonyms)
-          extra.innerHTML += `<div><strong>Antonyms:</strong> ${word.antonyms}</div>`;
-        if (word.collocations)
-          extra.innerHTML += `<div><strong>Collocations:</strong> ${word.collocations}</div>`;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Remove from group';
-        removeBtn.style.marginTop = '10px';
-        removeBtn.style.backgroundColor = '#dc3545';
-        removeBtn.style.color = 'white';
-        removeBtn.style.border = 'none';
-        removeBtn.style.padding = '6px 10px';
-        removeBtn.style.borderRadius = '6px';
-        removeBtn.style.cursor = 'pointer';
-        removeBtn.onclick = () => {
-          group.words.splice(wordIndex, 1);
-          localStorage.setItem('vocabGroups', JSON.stringify(groupData));
-          displayGroups();
-        };
-
-        extra.appendChild(removeBtn);
-
-        item.onclick = () => {
-          extra.style.display = extra.style.display === 'block' ? 'none' : 'block';
-        };
-
-        groupWords.appendChild(item);
-        groupWords.appendChild(extra);
-      });
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-group-btn';
-      deleteBtn.textContent = 'Delete Group';
-      deleteBtn.onclick = () => deleteGroup(index);
-
-      groupEl.appendChild(groupName);
-      groupEl.appendChild(groupWords);
-      groupEl.appendChild(deleteBtn);
-      groupListEl.appendChild(groupEl);
+      groupWords.appendChild(item);
+      groupWords.appendChild(extra);
     });
-  }
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-group-btn';
+    deleteBtn.textContent = 'Delete Group';
+    deleteBtn.onclick = () => deleteGroup(index);
+
+    groupEl.appendChild(groupName);
+    groupEl.appendChild(groupWords);
+    groupEl.appendChild(deleteBtn);
+    groupListEl.appendChild(groupEl);
+  });
+}
 
   updateVocabCount(JSON.parse(localStorage.getItem('vocabList'))?.length || 0);
+  document.getElementById('groupSearch').addEventListener('input', displayGroups);
+
 </script>
 
 </body>
