@@ -191,26 +191,46 @@
       cursor: pointer;
     }
 
-    #groupSearch {
+    
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+#groupSearch {
   width: 95%;
-  margin-top: 10px;
-  padding: 6px 10px;
+  padding: 6px 35px 6px 10px; /* add space for the cross */
   font-size: 4.2vw;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
+
+#clearSearchBtn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 5vw;
+  color: #999;
+  cursor: pointer;
+  opacity: 0.5;
+  z-index: 5;
+}
    /* -.- Responsive for Desktop */
     @media (min-width: 600px) {
       #vocabCount { font-size: 25px; }
+      input[type="text"] {width: 98%;}
       .back-btn {font-size: 16px;padding: 8px 14px;}
-      h1 { font-size: 32px; }
+      h1 {font-size: 32px; }
       .tab-btn, .save-btn { font-size: 15px; }
       input[type="text"] { font-size: 16px; }
       .word-header, .group-name { font-size: 20px; }
       .part-of-speech, .group-word-item { font-size: 16px; }
       .meaning, .extra-info, .group-popup { font-size: 16px; }
       .action-btns button, .delete-group-btn { font-size: 14px; }
-      #groupSearch {font-size: 20px;width: 99%;padding: 6px 8px;margin-top: 20px;margin-bottom: 10px;}
+      #groupSearch {font-size: 16px;width: 96.5%;padding: 6px 35px 6px 10px;margin-top: 6px;margin-bottom: 2px;}
+      #clearSearchBtn {font-size: 18px;}
     }
 
     .clear-btn {
@@ -291,11 +311,17 @@
 
 <div id="groups" class="section">
   <div class="input-group">
-    <input type="text" id="newGroup" placeholder="Name the group" />
-    <button class="save-btn" onclick="createGroup()">Create Group</button>
+  <input type="text" id="newGroup" placeholder="Name the group" />
+  <button class="save-btn" onclick="createGroup()">Create Group</button>
+</div>
 
-    
-   <input type="text" id="groupSearch" placeholder="Search the group..." />
+
+<div class="search-wrapper">
+  <input type="text" id="groupSearch" placeholder="Search the group..." oninput="toggleClearButton()" />
+  <span id="clearSearchBtn" onclick="clearSearch()" style="display: none;">×</span>
+</div>
+
+
 
 
   <div id="groupList" class="group-list"></div>
@@ -653,6 +679,19 @@ function clearForm() {
 
   updateVocabCount(JSON.parse(localStorage.getItem('vocabList'))?.length || 0);
   document.getElementById('groupSearch').addEventListener('input', displayGroups);
+function toggleClearButton() {
+  const searchInput = document.getElementById('groupSearch');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  clearBtn.style.display = searchInput.value ? 'block' : 'none';
+}
+
+function clearSearch() {
+  const searchInput = document.getElementById('groupSearch');
+  searchInput.value = '';
+  document.getElementById('clearSearchBtn').style.display = 'none';
+  displayGroups(); // ✅ Re-render full group list
+}
+
 
 </script>
 
