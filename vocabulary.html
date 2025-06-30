@@ -203,6 +203,24 @@
       .meaning, .extra-info, .group-popup { font-size: 16px; }
       .action-btns button, .delete-group-btn { font-size: 14px; }
     }
+
+    .clear-btn {
+  background-color: #ff9900;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 4.5vw;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 60%;
+}
+@media (min-width: 600px) {
+  .clear-btn {
+    font-size: 16px;
+    width: 200px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -246,6 +264,10 @@
   </div>
   <button class="save-btn" onclick="saveVocab()">Save</button>
 </div>
+  <button class="clear-btn" onclick="clearForm()" style="margin-top: 12px; display: block; margin-left: auto; margin-right: auto;">
+  Clear All
+</button>
+
 
   <!-- -.- Vocabulary List Section -->
 
@@ -276,48 +298,84 @@
   const vocabCountEl = document.getElementById('vocabCount');
   const newGroupInput = document.getElementById('newGroup');
   const groupListEl = document.getElementById('groupList');
+  let unsavedEditData = null;
+  let editingIndex = null;
 
   function switchTab(tab) {
-    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tab).classList.add('active');
-    const tabs = ['add', 'list', 'groups'];
-    document.querySelectorAll('.tab-btn')[tabs.indexOf(tab)].classList.add('active');
-    if (tab === 'list') displayVocab();
-    if (tab === 'groups') displayGroups();
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+
+  const tabs = ['add', 'list', 'groups'];
+  document.querySelectorAll('.tab-btn')[tabs.indexOf(tab)].classList.add('active');
+
+  if (tab === 'add' && unsavedEditData) {
+    newWordInput.value = unsavedEditData.word;
+    newPartInput.value = unsavedEditData.part;
+    newMeaningInput.value = unsavedEditData.meaning;
+    newSynonymsInput.value = unsavedEditData.synonyms || '';
+    newAntonymsInput.value = unsavedEditData.antonyms || '';
+    newCollocationsInput.value = unsavedEditData.collocations || '';
   }
+
+  if (tab === 'list') displayVocab();
+  if (tab === 'groups') displayGroups();
+}
+
 
   function updateVocabCount(count) {
     vocabCountEl.textContent = `📘 Vocabulary Count: ${count}`;
   }
 
   function saveVocab() {
-    const word = newWordInput.value.trim();
-    const part = newPartInput.value.trim();
-    const meaning = newMeaningInput.value.trim();
-    const synonyms = newSynonymsInput.value.trim();
-    const antonyms = newAntonymsInput.value.trim();
-    const collocations = newCollocationsInput.value.trim();
+  const word = newWordInput.value.trim();
+  const part = newPartInput.value.trim();
+  const meaning = newMeaningInput.value.trim();
+  const synonyms = newSynonymsInput.value.trim();
+  const antonyms = newAntonymsInput.value.trim();
+  const collocations = newCollocationsInput.value.trim();
 
-    if (!word || !meaning) {
-      alert('Please fill in at least word and meaning.');
-      return;
-    }
-
-    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
-    vocabData.push({ word, part, meaning, synonyms, antonyms, collocations });
-    localStorage.setItem('vocabList', JSON.stringify(vocabData));
-
-    newWordInput.value = '';
-    newPartInput.value = '';
-    newMeaningInput.value = '';
-    newSynonymsInput.value = '';
-    newAntonymsInput.value = '';
-    newCollocationsInput.value = '';
-
-    alert('Saved successfully!');
-    updateVocabCount(vocabData.length);
+  if (!word || !meaning) {
+    alert('Please fill in at least word and meaning.');
+    return;
   }
+
+  const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+  const newEntry = { word, part, meaning, synonyms, antonyms, collocations };
+
+  if (editingIndex !== null) {
+    vocabData[editingIndex] = newEntry;
+  } else {
+    vocabData.push(newEntry);
+  }
+
+  localStorage.setItem('vocabList', JSON.stringify(vocabData));
+
+  // Clear form and reset state
+  newWordInput.value = '';
+  newPartInput.value = '';
+  newMeaningInput.value = '';
+  newSynonymsInput.value = '';
+  newAntonymsInput.value = '';
+  newCollocationsInput.value = '';
+  unsavedEditData = null;
+  editingIndex = null;
+
+  alert('Saved successfully!');
+  updateVocabCount(vocabData.length);
+}
+
+function clearForm() {
+  newWordInput.value = '';
+  newPartInput.value = '';
+  newMeaningInput.value = '';
+  newSynonymsInput.value = '';
+  newAntonymsInput.value = '';
+  newCollocationsInput.value = '';
+  unsavedEditData = null;
+  editingIndex = null;
+}
+
 
   function displayVocab() {
     const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
@@ -415,19 +473,22 @@
   }
 
   function editVocab(index) {
-    const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
-    const entry = vocabData[index];
-    newWordInput.value = entry.word;
-    newPartInput.value = entry.part;
-    newMeaningInput.value = entry.meaning;
-    newSynonymsInput.value = entry.synonyms || '';
-    newAntonymsInput.value = entry.antonyms || '';
-    newCollocationsInput.value = entry.collocations || '';
-    vocabData.splice(index, 1);
-    localStorage.setItem('vocabList', JSON.stringify(vocabData));
-    updateVocabCount(vocabData.length);
-    switchTab('add');
-  }
+  const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
+  const entry = vocabData[index];
+
+  newWordInput.value = entry.word;
+  newPartInput.value = entry.part;
+  newMeaningInput.value = entry.meaning;
+  newSynonymsInput.value = entry.synonyms || '';
+  newAntonymsInput.value = entry.antonyms || '';
+  newCollocationsInput.value = entry.collocations || '';
+
+  unsavedEditData = { ...entry };
+  editingIndex = index;
+
+  switchTab('add');
+}
+
 
   function deleteVocab(index) {
     const vocabData = JSON.parse(localStorage.getItem('vocabList')) || [];
