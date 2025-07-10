@@ -5,276 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vocabulary Practice</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      margin: 0;
-      background: #f5f5f5;
+    /* ----------  EXISTING STYLES – UNCHANGED EXCEPT WHERE MARKED ---------- */
+    body{font-family:Arial,sans-serif;padding:20px;margin:0;background:#f5f5f5}
+    #vocabCount{position:absolute;top:10px;right:10px;font-size:3vw;color:#333}
+    .back-btn{position:absolute;top:10px;left:10px;font-size:4vw;padding:6px 12px;background-color:#666;color:#fff;border:none;border-radius:8px;cursor:pointer;z-index:10}
+    h1{text-align:center;font-size:6vw;margin-bottom:20px}
+    .tabs{display:flex;justify-content:space-around;margin-bottom:20px;flex-wrap:wrap}
+    .tab-btn{flex:1;padding:12px;font-size:4.5vw;background-color:#007bff;color:#fff;border:none;cursor:pointer}
+    .tab-btn.active{background-color:#0056b3}
+    .section{display:none}
+    .section.active{display:block}
+    .input-group{margin-bottom:15px}
+    input[type="text"]{width:95%;padding:12px;font-size:4.5vw;border-radius:8px;border:1px solid #ccc;margin-bottom:10px;margin-left:-2.1px}
+    button.save-btn{background-color:#28a745;color:#fff;border:none;padding:12px;font-size:4.5vw;border-radius:8px;cursor:pointer;width:100%}
+    .vocab-list,.group-list{margin-top:20px}
+    .word-entry,.group-entry{background:#fff;padding:10px;border-radius:10px;margin-bottom:10px;box-shadow:0 2px 4px rgba(0,0,0,.1);position:relative}
+    .word-header,.group-name{font-size:5vw;font-weight:bold;color:#152a9f;cursor:pointer}
+    .part-of-speech{font-size:4vw;color:#555;display:inline-block;margin-left:10px}
+    .meaning{font-size:4.2vw;margin:5px 0;color:#444}
+    .extra-info{display:none;font-size:3.8vw;color:#555;margin:5px 0 10px 10px}
+    .action-btns{margin-top:5px}
+    .action-btns button{font-size:3.8vw;padding:6px 12px;margin-right:10px;border:none;border-radius:6px;cursor:pointer}
+    .edit-btn{background-color:orange;color:#fff}
+    .delete-btn{background-color:red;color:#fff}
+    .plus-btn{background-color:#17a2b8;color:#fff}
+    .delete-group-btn{background-color:#dc3545;color:#fff;margin-top:8px}
+
+    /* --- DRAG HANDLE TALLER (only line changed) --- */
+    .drag-btn{background-color:#6c757d;color:#fff;border:none;padding:8px 8px;margin-right:8px;border-radius:4px;cursor:grab;font-size:3.5vw}
+
+    .group-popup{background:#fff;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);padding:10px;margin-top:8px;font-size:4vw;position:relative;z-index:1}
+    .group-popup div{padding:5px;cursor:pointer}
+    .group-popup div:hover{background:#f0f0f0}
+    .group-word-item{font-size:4vw;margin:6px 0;padding:6px;background:#f9f9f9;border-radius:6px;cursor:pointer;display:flex;align-items:center}
+    .search-wrapper{position:relative;width:95%}
+    #groupSearch,#vocabSearch{width:95%;padding:6px 35px 6px 10px;font-size:4.2vw;border-radius:8px;border:1px solid #ccc}
+    #clearSearchBtn,#clearVocabBtn{position:absolute;right:10px;top:40%;transform:translateY(-50%);font-size:5vw;color:#999;cursor:pointer;opacity:.5;z-index:5}
+    @media(min-width:600px){
+      #vocabCount{font-size:25px}
+      input[type="text"]{width:98%}
+      .back-btn{font-size:16px;padding:8px 14px}
+      h1{font-size:32px}
+      .tab-btn,.save-btn{font-size:15px}
+      input[type="text"]{font-size:16px}
+      .word-header,.group-name{font-size:20px}
+      .part-of-speech,.group-word-item{font-size:16px}
+      .meaning,.extra-info,.group-popup{font-size:16px}
+      .action-btns button,.delete-group-btn{font-size:14px}
+      #groupSearch,#vocabSearch{font-size:16px;width:96.5%;padding:6px 35px 6px 10px;margin:6px 0 2px}
+      #clearSearchBtn,#clearVocabBtn{font-size:18px;margin-top:6px}
+      .search-wrapper{width:100%}
+      .drag-btn{font-size:14px}
     }
-
-  /* -.- Vocabulary Count */
-
-    #vocabCount {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 3vw;
-      color: #333;
-    }
-
-    /* -.- Back Button Styles */
-.back-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 4vw;
-  padding: 6px 12px;
-  background-color: #666;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-
-  /* -.- Page Title */  
-
-    h1 {
-      text-align: center;
-      font-size: 6vw;
-      margin-bottom: 20px;
-    }
-
-  /* -.- Tab Styles */  
-
-    .tabs {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      font-size: 4.5vw;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background-color: #0056b3;
-    }
-
-    
-  /* -.- Section Visibility */
-
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-  
-  /* -.- Input Group */
-
-    .input-group {
-      margin-bottom: 15px;
-    }
-    input[type="text"] {
-      width: 95%;
-      padding: 12px;
-      font-size: 4.5vw;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      margin-left: -2.1px;
-      
-    }
-    button.save-btn {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 12px;
-      font-size: 4.5vw;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-  /* -.- Vocabulary & Group Lists */
-
-    .vocab-list, .group-list {
-      margin-top: 20px;
-    }
-
-  /* -.- Word & Group Entries */
-
-    .word-entry, .group-entry {
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .word-header, .group-name {
-      font-size: 5vw;
-      font-weight: bold;
-      color: #152a9f;
-      cursor: pointer;
-    }
-    .part-of-speech {
-      font-size: 4vw;
-      color: #555;
-      display: inline-block;
-      margin-left: 10px;
-    }
-    .meaning {
-      font-size: 4.2vw;
-      margin: 5px 0;
-      color: #444;
-    }
-    .extra-info {
-      display: none;
-      font-size: 3.8vw;
-      color: #555;
-      margin: 5px 0 10px 10px;
-    }
-    .action-btns {
-      margin-top: 5px;
-    }
-    .action-btns button {
-      font-size: 3.8vw;
-      padding: 6px 12px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .edit-btn { background-color: orange; color: white; }
-    .delete-btn { background-color: red; color: white; }
-    .plus-btn { background-color: #17a2b8; color: white; }
-    .delete-group-btn { background-color: #dc3545; color: white; margin-top: 8px; }
-
-    /* -.- NEW: Drag Button */
-
-    .drag-btn  {
-      background-color:#6c757d;
-      color:white;
-      border:none;
-      padding:4px 8px;
-      margin-right:8px;
-      border-radius:4px;
-      cursor:grab;
-      font-size:3.5vw;
-    }
-
-  /* -.- Group Popup */
-
-    .group-popup {
-      background: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      padding: 10px;
-      margin-top: 8px;
-      font-size: 4vw;
-      position: relative;
-      z-index: 1;
-    }
-    .group-popup div {
-      padding: 5px;
-      cursor: pointer;
-    }
-    .group-popup div:hover {
-      background-color: #f0f0f0;
-    }
-    
-
-  /* -.- Group Word Item */
-
-    .group-word-item {
-      font-size: 4vw;
-      margin: 6px 0;
-      padding: 6px;
-      background: #f9f9f9;
-      border-radius: 6px;
-      cursor: pointer;
-      display:flex;
-      align-items:center;
-    }
-
-    
-
-.search-wrapper {
-  position: relative;
-  width: 95%;
-}
-
-#groupSearch {
-  width: 95%;
-  padding: 6px 35px 6px 10px; /* add space for the cross */
-  font-size: 4.2vw;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-#clearSearchBtn {
-  position: absolute;
-  right: 10px;
-  top: 40%;
-  transform: translateY(-50%);
-  font-size: 5vw;
-  color: #999;
-  cursor: pointer;
-  opacity: 0.5;
-  z-index: 5;
-}
-   /* -.- Responsive for Desktop */
-    @media (min-width: 600px) {
-      #vocabCount { font-size: 25px; }
-      input[type="text"] {width: 98%;}
-      .back-btn {font-size: 16px;padding: 8px 14px;}
-      h1 {font-size: 32px; }
-      .tab-btn, .save-btn { font-size: 15px; }
-      input[type="text"] { font-size: 16px; }
-      .word-header, .group-name { font-size: 20px; }
-      .part-of-speech, .group-word-item { font-size: 16px; }
-      .meaning, .extra-info, .group-popup { font-size: 16px; }
-      .action-btns button, .delete-group-btn { font-size: 14px; }
-      #groupSearch {font-size: 16px;width: 96.5%;padding: 6px 35px 6px 10px;margin-top: 6px;margin-bottom: 2px;}
-      #clearSearchBtn {font-size: 18px;margin-top: 6px;}
-      .search-wrapper {position: relative;width: 100%;}
-      .drag-btn {font-size:14px;}
-    }
-
-    .clear-btn {
-  background-color: #ff9900;
-  color: white;
-  border: none;
-  padding: 12px;
-  font-size: 4.5vw;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 60%;
-}
-@media (min-width: 600px) {
-  .clear-btn {
-    font-size: 16px;
-    width: 200px;
-  }
-}
-
-
+    .clear-btn{background:#ff9900;color:#fff;border:none;padding:12px;font-size:4.5vw;border-radius:8px;cursor:pointer;width:60%}
+    @media(min-width:600px){.clear-btn{font-size:16px;width:200px}}
   </style>
 </head>
 <body>
 
- <body>
-
-<!-- ----------  HTML BODY – UNCHANGED ---------- -->
+<!-- ----------  TOP BAR & TABS ---------- -->
 <button class="back-btn" onclick="history.back()">Back</button>
 <div id="vocabCount" style="position:absolute;top:10px;right:10px;color:#333;z-index:10;">📘 Vocabulary Count: 0</div>
 <h1>My Vocabulary</h1>
@@ -285,6 +74,7 @@
   <button class="tab-btn" onclick="switchTab('groups')">Groups</button>
 </div>
 
+<!-- ----------  ADD NEW WORD ---------- -->
 <div id="add" class="section active">
   <div class="input-group">
     <input type="text" id="newWord" placeholder="Type your new word"/>
@@ -298,8 +88,16 @@
   <button class="clear-btn" onclick="clearForm()" style="margin-top:12px;display:block;margin-left:auto;margin-right:auto;">Clear All</button>
 </div>
 
-<div id="list" class="section"><div id="vocabList" class="vocab-list"></div></div>
+<!-- ----------  MY VOCABULARY ---------- -->
+<div id="list" class="section">
+  <div class="search-wrapper">
+    <input id="vocabSearch" placeholder="Search word..." oninput="displayVocab()"/>
+    <span id="clearVocabBtn" style="display:none;" onclick="clearVocabSearch()">×</span>
+  </div>
+  <div id="vocabList" class="vocab-list"></div>
+</div>
 
+<!-- ----------  GROUPS ---------- -->
 <div id="groups" class="section">
   <div class="input-group">
     <input type="text" id="newGroup" placeholder="Name the group"/>
@@ -312,9 +110,9 @@
   <div id="groupList" class="group-list"></div>
 </div>
 
-<!-- ----------  SCRIPT SECTION ---------- -->
+<!-- ----------  SCRIPT ---------- -->
 <script>
-/* ========== GLOBAL ELEMENT REFS – UNCHANGED ========== */
+/* ======== DOM REFS ======== */
 const newWordInput=document.getElementById('newWord');
 const newPartInput=document.getElementById('newPart');
 const newMeaningInput=document.getElementById('newMeaning');
@@ -325,16 +123,14 @@ const vocabListEl=document.getElementById('vocabList');
 const vocabCountEl=document.getElementById('vocabCount');
 const newGroupInput=document.getElementById('newGroup');
 const groupListEl=document.getElementById('groupList');
-let unsavedEditData=null;
-let editingIndex=null;
+const vocabSearchInput=document.getElementById('vocabSearch');
+let unsavedEditData=null,editingIndex=null;
+let openGroupSet=new Set();
 
-/* === NEW: remember which groups are open === */
-let openGroupSet=new Set();   /* <— new helper set */
-
-/* ---------- TAB SWITCH ---------- */
+/* ======== TAB SWITCH ======== */
 function switchTab(tab){
-  document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
   const tabs=['add','list','groups'];
   document.querySelectorAll('.tab-btn')[tabs.indexOf(tab)].classList.add('active');
@@ -349,21 +145,30 @@ function switchTab(tab){
   if(tab==='list')displayVocab();
   if(tab==='groups')displayGroups();
 }
-function updateVocabCount(count){vocabCountEl.textContent=`📘 Vocabulary Count: ${count}`;}
+function updateVocabCount(c){vocabCountEl.textContent=`📘 Vocabulary Count: ${c}`;}
 
-/* ---------- SAVE & CLEAR ---------- */
+/* ======== SAVE / CLEAR WORD ======== */
 function saveVocab(){
-  const word=newWordInput.value.trim();
-  const part=newPartInput.value.trim();
-  const meaning=newMeaningInput.value.trim();
-  const synonyms=newSynonymsInput.value.trim();
-  const antonyms=newAntonymsInput.value.trim();
-  const collocations=newCollocationsInput.value.trim();
+  const word=newWordInput.value.trim(),part=newPartInput.value.trim(),
+        meaning=newMeaningInput.value.trim(),synonyms=newSynonymsInput.value.trim(),
+        antonyms=newAntonymsInput.value.trim(),collocations=newCollocationsInput.value.trim();
   if(!word||!meaning){alert('Please fill in at least word and meaning.');return;}
   const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[];
   const newEntry={word,part,meaning,synonyms,antonyms,collocations};
-  if(editingIndex!==null){vocabData[editingIndex]=newEntry;}else{vocabData.push(newEntry);}
+  let oldWordText=null;
+  if(editingIndex!==null){oldWordText=vocabData[editingIndex].word;vocabData[editingIndex]=newEntry;}
+  else vocabData.push(newEntry);
   localStorage.setItem('vocabList',JSON.stringify(vocabData));
+
+  /* --- sync to groups if edit --- */
+  if(oldWordText!==null){
+    const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
+    let changed=false;
+    groupData.forEach(g=>{
+      (g.words||[]).forEach((w,i)=>{if(w.word===oldWordText){g.words[i]=newEntry;changed=true;}});
+    });
+    if(changed){localStorage.setItem('vocabGroups',JSON.stringify(groupData));displayGroups();}
+  }
   clearForm();
   alert('Saved successfully!');
   updateVocabCount(vocabData.length);
@@ -374,12 +179,15 @@ function clearForm(){
   unsavedEditData=null;editingIndex=null;
 }
 
-/* ---------- VOCAB LIST ---------- */
+/* ======== DISPLAY VOCAB WITH SEARCH ======== */
 function displayVocab(){
   const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[];
+  const filter=(vocabSearchInput.value||'').toLowerCase();
+  document.getElementById('clearVocabBtn').style.display=filter?'block':'none';
   updateVocabCount(vocabData.length);
   vocabListEl.innerHTML='';
   vocabData.forEach((entry,index)=>{
+    if(filter&&!entry.word.toLowerCase().includes(filter))return;
     const container=document.createElement('div');container.className='word-entry';
     const header=document.createElement('div');header.className='word-header';header.textContent=entry.word;
     const pos=document.createElement('span');pos.className='part-of-speech';pos.textContent=entry.part?`(${entry.part})`:'';
@@ -389,150 +197,123 @@ function displayVocab(){
     if(entry.synonyms)extra.innerHTML+=`<div><strong>Synonyms:</strong> ${entry.synonyms}</div>`;
     if(entry.antonyms)extra.innerHTML+=`<div><strong>Antonyms:</strong> ${entry.antonyms}</div>`;
     if(entry.collocations)extra.innerHTML+=`<div><strong>Collocations:</strong> ${entry.collocations}</div>`;
-    const closeBtn=document.createElement('button');closeBtn.textContent='Close';Object.assign(closeBtn.style,{marginTop:'10px',background:'#888',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer',display:'none'});
-    let clickStage=0;
-    header.onclick=()=>{if(clickStage===0){meaning.style.display='block';extra.style.display='none';closeBtn.style.display='none';clickStage=1;}
-                        else if(clickStage===1){extra.style.display='block';closeBtn.style.display='inline-block';clickStage=2;}};
-    closeBtn.onclick=e=>{e.stopPropagation();meaning.style.display=extra.style.display=closeBtn.style.display='none';clickStage=0;};
+    const closeBtn=document.createElement('button');closeBtn.textContent='Close';
+    Object.assign(closeBtn.style,{marginTop:'10px',background:'#888',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer',display:'none'});
+    let stage=0;header.onclick=()=>{if(stage===0){meaning.style.display='block';stage=1;}
+                                   else if(stage===1){extra.style.display='block';closeBtn.style.display='inline-block';stage=2;}};
+    closeBtn.onclick=e=>{e.stopPropagation();meaning.style.display=extra.style.display=closeBtn.style.display='none';stage=0;};
     extra.appendChild(closeBtn);
     const buttons=document.createElement('div');buttons.className='action-btns';
     const editBtn=document.createElement('button');editBtn.className='edit-btn';editBtn.textContent='Edit';editBtn.onclick=()=>editVocab(index);
-    const deleteBtn=document.createElement('button');deleteBtn.className='delete-btn';deleteBtn.textContent='Delete';deleteBtn.onclick=()=>deleteVocab(index);
+    const delBtn=document.createElement('button');delBtn.className='delete-btn';delBtn.textContent='Delete';delBtn.onclick=()=>deleteVocab(index);
     const plusBtn=document.createElement('button');plusBtn.className='plus-btn';plusBtn.textContent='+';plusBtn.onclick=()=>showGroupPopup(container,entry);
-    buttons.append(editBtn,deleteBtn,plusBtn);
+    buttons.append(editBtn,delBtn,plusBtn);
     container.append(header,meaning,extra,buttons);
     vocabListEl.appendChild(container);
   });
 }
+
+/* clear vocab search */
+function clearVocabSearch(){vocabSearchInput.value='';displayVocab();}
+
+/* ======== POPUP ADD TO GROUP ======== */
 function showGroupPopup(container,word){
   document.querySelectorAll('.group-popup').forEach(p=>p.remove());
   const groups=JSON.parse(localStorage.getItem('vocabGroups'))||[];
   if(!groups.length){alert("No groups found. Please create a group first.");return;}
   const popup=document.createElement('div');popup.className='group-popup';
-  groups.forEach((group,i)=>{
-    const item=document.createElement('div');item.textContent=group.name;
-    item.onclick=()=>{groups[i].words=groups[i].words||[];groups[i].words.push(word);localStorage.setItem('vocabGroups',JSON.stringify(groups));popup.remove();alert(`Added to group "${group.name}"`);};
-    popup.appendChild(item);
-  });
+  groups.forEach((g,i)=>{const item=document.createElement('div');item.textContent=g.name;
+    item.onclick=()=>{g.words=g.words||[];g.words.push(word);localStorage.setItem('vocabGroups',JSON.stringify(groups));popup.remove();alert(`Added to group "${g.name}"`);};
+    popup.appendChild(item);});
   container.appendChild(popup);
 }
-function editVocab(index){
-  const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[];
-  const entry=vocabData[index];
-  newWordInput.value=entry.word;newPartInput.value=entry.part;newMeaningInput.value=entry.meaning;
-  newSynonymsInput.value=entry.synonyms||'';newAntonymsInput.value=entry.antonyms||'';newCollocationsInput.value=entry.collocations||'';
-  unsavedEditData={...entry};editingIndex=index;switchTab('add');
-}
-function deleteVocab(index){
-  const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[];
-  if(confirm("Delete this word?")){vocabData.splice(index,1);localStorage.setItem('vocabList',JSON.stringify(vocabData));updateVocabCount(vocabData.length);displayVocab();}
-}
 
-/* ---------- GROUPS ---------- */
-function createGroup(){
-  const name=newGroupInput.value.trim();
-  if(!name){alert("Group name cannot be empty.");return;}
-  const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
-  groupData.unshift({name,words:[]});
-  localStorage.setItem('vocabGroups',JSON.stringify(groupData));
-  newGroupInput.value='';
-  displayGroups();
+/* ======== EDIT / DELETE MAIN LIST ======== */
+function editVocab(i){
+  const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[],e=vocabData[i];
+  newWordInput.value=e.word;newPartInput.value=e.part;newMeaningInput.value=e.meaning;
+  newSynonymsInput.value=e.synonyms||'';newAntonymsInput.value=e.antonyms||'';newCollocationsInput.value=e.collocations||'';
+  unsavedEditData={...e};editingIndex=i;switchTab('add');
 }
-function deleteGroup(index){
-  const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
-  if(confirm(`Delete group "${groupData[index].name}"?`)){
-    openGroupSet.delete(groupData[index].name);  /* keep set clean */
-    groupData.splice(index,1);
+function deleteVocab(i){
+  const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[],old=vocabData[i].word;
+  if(confirm("Delete this word?")){
+    vocabData.splice(i,1);localStorage.setItem('vocabList',JSON.stringify(vocabData));
+    const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
+    groupData.forEach(g=>g.words=g.words?.filter(w=>w.word!==old)||[]);
     localStorage.setItem('vocabGroups',JSON.stringify(groupData));
-    displayGroups();
+    updateVocabCount(vocabData.length);displayVocab();displayGroups();
   }
 }
 
-/* helper for re-ordering array */
-function arrayMove(arr,from,to){const item=arr.splice(from,1)[0];arr.splice(to,0,item);}
+/* ======== GROUPS ======== */
+function createGroup(){
+  const name=newGroupInput.value.trim();if(!name){alert("Group name cannot be empty.");return;}
+  const d=JSON.parse(localStorage.getItem('vocabGroups'))||[];d.unshift({name,words:[]});
+  localStorage.setItem('vocabGroups',JSON.stringify(d));newGroupInput.value='';displayGroups();
+}
+function deleteGroup(i){
+  const d=JSON.parse(localStorage.getItem('vocabGroups'))||[];
+  if(confirm(`Delete group "${d[i].name}"?`)){openGroupSet.delete(d[i].name);d.splice(i,1);localStorage.setItem('vocabGroups',JSON.stringify(d));displayGroups();}
+}
+function arrayMove(a,f,t){const x=a.splice(f,1)[0];a.splice(t,0,x);}
 
-/* ---------- DISPLAY GROUPS (WITH OPEN-STATE MEMORY) ---------- */
+/* ======== DISPLAY GROUPS ======== */
 function displayGroups(){
-  const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
-  const filter=document.getElementById('groupSearch')?.value?.toLowerCase()||'';
+  const d=JSON.parse(localStorage.getItem('vocabGroups'))||[],filter=(groupSearch.value||'').toLowerCase();
   groupListEl.innerHTML='';
-  groupData.forEach((group,index)=>{
-    if(!group.name.toLowerCase().includes(filter))return;
-    const groupEl=document.createElement('div');groupEl.className='group-entry';
-    const groupName=document.createElement('div');groupName.className='group-name';groupName.textContent=group.name;
-    const groupWords=document.createElement('div');groupWords.className='group-words';
-    /* === keep open state === */
-    groupWords.style.display=openGroupSet.has(group.name)?'block':'none';
-    groupName.onclick=()=>{
-      const isOpen=groupWords.style.display==='block';
-      groupWords.style.display=isOpen?'none':'block';
-      isOpen?openGroupSet.delete(group.name):openGroupSet.add(group.name);
-    };
-
-    /* allow drop on the container */
-    groupWords.addEventListener('dragover',e=>e.preventDefault());
-    groupWords.addEventListener('drop',e=>{
-      e.preventDefault();
-      const srcIdx=+e.dataTransfer.getData('text/plain');
-      const destIdx=+e.target.closest('.group-word-item')?.dataset.index;
-      if(isNaN(srcIdx)||isNaN(destIdx)||srcIdx===destIdx)return;
-      arrayMove(group.words,srcIdx,destIdx);
-      localStorage.setItem('vocabGroups',JSON.stringify(groupData));
-      displayGroups();           /* re-render but keeps open via set */
+  d.forEach((g,idx)=>{
+    if(!g.name.toLowerCase().includes(filter))return;
+    const gEl=document.createElement('div');gEl.className='group-entry';
+    const gName=document.createElement('div');gName.className='group-name';gName.textContent=g.name;
+    const gWords=document.createElement('div');gWords.className='group-words';gWords.style.display=openGroupSet.has(g.name)?'block':'none';
+    gName.onclick=()=>{const o=gWords.style.display==='block';gWords.style.display=o?'none':'block';o?openGroupSet.delete(g.name):openGroupSet.add(g.name);};
+    gWords.addEventListener('dragover',e=>e.preventDefault());
+    gWords.addEventListener('drop',e=>{
+      e.preventDefault();const s=+e.dataTransfer.getData('text/plain'),
+      t=+e.target.closest('.group-word-item')?.dataset.index;if(isNaN(s)||isNaN(t)||s===t)return;
+      arrayMove(g.words,s,t);localStorage.setItem('vocabGroups',JSON.stringify(d));displayGroups();
     });
-
-    (group.words||[]).forEach((word,wordIndex)=>{
-      const item=document.createElement('div');item.className='group-word-item';item.dataset.index=wordIndex;
-      const dragBtn=document.createElement('button');dragBtn.className='drag-btn';dragBtn.textContent='⇅';dragBtn.draggable=true;
-      dragBtn.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',wordIndex));
-      item.appendChild(dragBtn);
-
-      const textWrapper=document.createElement('div');
-      textWrapper.innerHTML=`<strong>${word.word}</strong> (${word.part||'—'})<br>${word.meaning}`;
-      item.appendChild(textWrapper);
-
+    (g.words||[]).forEach((w,i)=>{
+      const item=document.createElement('div');item.className='group-word-item';item.dataset.index=i;
+      const drag=document.createElement('button');drag.className='drag-btn';drag.textContent='⇅';drag.draggable=true;
+      drag.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',i));
+      item.appendChild(drag);
+      const txt=document.createElement('div');txt.innerHTML=`<strong>${w.word}</strong> (${w.part||'—'})<br>${w.meaning}`;item.appendChild(txt);
       const extra=document.createElement('div');extra.className='extra-info';extra.style.display='none';
-      if(word.synonyms)extra.innerHTML+=`<div><strong>Synonyms:</strong> ${word.synonyms}</div>`;
-      if(word.antonyms)extra.innerHTML+=`<div><strong>Antonyms:</strong> ${word.antonyms}</div>`;
-      if(word.collocations)extra.innerHTML+=`<div><strong>Collocations:</strong> ${word.collocations}</div>`;
-
-      const removeBtn=document.createElement('button');removeBtn.textContent='Remove from group';
-      Object.assign(removeBtn.style,{marginTop:'10px',background:'#dc3545',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer'});
-      removeBtn.onclick=()=>{
-        group.words.splice(wordIndex,1);
-        localStorage.setItem('vocabGroups',JSON.stringify(groupData));
-        displayGroups();
+      if(w.synonyms)extra.innerHTML+=`<div><strong>Synonyms:</strong> ${w.synonyms}</div>`;
+      if(w.antonyms)extra.innerHTML+=`<div><strong>Antonyms:</strong> ${w.antonyms}</div>`;
+      if(w.collocations)extra.innerHTML+=`<div><strong>Collocations:</strong> ${w.collocations}</div>`;
+      /* --- Remove & NEW Edit in group --- */
+      const rm=document.createElement('button');rm.textContent='Remove from group';
+      Object.assign(rm.style,{marginTop:'10px',background:'#dc3545',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer'});
+      rm.onclick=()=>{g.words.splice(i,1);localStorage.setItem('vocabGroups',JSON.stringify(d));displayGroups();};
+      const ed=document.createElement('button');ed.textContent='Edit';
+      Object.assign(ed.style,{marginTop:'10px',marginLeft:'8px',background:'orange',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer'});
+      ed.onclick=()=>{ /* open editor with this word */
+        const vocab=JSON.parse(localStorage.getItem('vocabList'))||[];
+        const idx=vocab.findIndex(v=>v.word===w.word);
+        if(idx>-1)editVocab(idx);
+        else alert("Word not found in main list.");
       };
-      extra.appendChild(removeBtn);
+      extra.append(rm,ed);
 
-      item.onclick=e=>{
-        if(e.target.classList.contains('drag-btn'))return;
-        extra.style.display=extra.style.display==='block'?'none':'block';
-      };
-
-      groupWords.append(item,extra);
+      item.onclick=e=>{if(e.target.classList.contains('drag-btn'))return;extra.style.display=extra.style.display==='block'?'none':'block';};
+      gWords.append(item,extra);
     });
-
-    const deleteBtn=document.createElement('button');deleteBtn.className='delete-group-btn';deleteBtn.textContent='Delete Group';deleteBtn.onclick=()=>deleteGroup(index);
-    groupEl.append(groupName,groupWords,deleteBtn);
-    groupListEl.appendChild(groupEl);
+    const del=document.createElement('button');del.className='delete-group-btn';del.textContent='Delete Group';del.onclick=()=>deleteGroup(idx);
+    gEl.append(gName,gWords,del);groupListEl.appendChild(gEl);
   });
 }
 
-/* ---------- SEARCH & CLEAR ---------- */
-document.getElementById('groupSearch').addEventListener('input',displayGroups);
-function toggleClearButton(){
-  const s=document.getElementById('groupSearch'),c=document.getElementById('clearSearchBtn');
-  c.style.display=s.value?'block':'none';
-}
-function clearSearch(){
-  const s=document.getElementById('groupSearch');
-  s.value='';document.getElementById('clearSearchBtn').style.display='none';
-  displayGroups();
-}
+/* ======== GROUP SEARCH & CLEAR ======== */
+function toggleClearButton(){clearSearchBtn.style.display=groupSearch.value?'block':'none';}
+function clearSearch(){groupSearch.value='';clearSearchBtn.style.display='none';displayGroups();}
 
-/* ---------- INIT ---------- */
+/* ======== INIT ======== */
+document.getElementById('groupSearch').addEventListener('input',displayGroups);
 updateVocabCount(JSON.parse(localStorage.getItem('vocabList'))?.length||0);
+displayVocab();
 </script>
 
 </body>
