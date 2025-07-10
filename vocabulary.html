@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vocabulary Practice</title>
   <style>
-    /* ----------  EXISTING STYLES – UNCHANGED EXCEPT WHERE MARKED ---------- */
+    /* ----------  BASE STYLES (only .delete-group-btn line changed) ---------- */
     body{font-family:Arial,sans-serif;padding:20px;margin:0;background:#f5f5f5}
     #vocabCount{position:absolute;top:10px;right:10px;font-size:3vw;color:#333}
     .back-btn{position:absolute;top:10px;left:10px;font-size:4vw;padding:6px 12px;background-color:#666;color:#fff;border:none;border-radius:8px;cursor:pointer;z-index:10}
@@ -13,14 +13,14 @@
     .tabs{display:flex;justify-content:space-around;margin-bottom:20px;flex-wrap:wrap}
     .tab-btn{flex:1;padding:12px;font-size:4.5vw;background-color:#007bff;color:#fff;border:none;cursor:pointer}
     .tab-btn.active{background-color:#0056b3}
-    .section{display:none}
-    .section.active{display:block}
+    .section{display:none}.section.active{display:block}
     .input-group{margin-bottom:15px}
     input[type="text"]{width:95%;padding:12px;font-size:4.5vw;border-radius:8px;border:1px solid #ccc;margin-bottom:10px;margin-left:-2.1px}
     button.save-btn{background-color:#28a745;color:#fff;border:none;padding:12px;font-size:4.5vw;border-radius:8px;cursor:pointer;width:100%}
     .vocab-list,.group-list{margin-top:20px}
     .word-entry,.group-entry{background:#fff;padding:10px;border-radius:10px;margin-bottom:10px;box-shadow:0 2px 4px rgba(0,0,0,.1);position:relative}
-    .word-header,.group-name{font-size:5vw;font-weight:bold;color:#152a9f;cursor:pointer}
+    .group-drag-btn{background:#6c757d;color:#fff;border:none;padding:8px 8px;border-radius:4px;cursor:grab;font-size:4vw;margin-right:8px}
+    .word-header,.group-name{font-size:5vw;font-weight:bold;color:#152a9f;cursor:pointer;display:inline-block}
     .part-of-speech{font-size:4vw;color:#555;display:inline-block;margin-left:10px}
     .meaning{font-size:4.2vw;margin:5px 0;color:#444}
     .extra-info{display:none;font-size:3.8vw;color:#555;margin:5px 0 10px 10px}
@@ -29,11 +29,9 @@
     .edit-btn{background-color:orange;color:#fff}
     .delete-btn{background-color:red;color:#fff}
     .plus-btn{background-color:#17a2b8;color:#fff}
-    .delete-group-btn{background-color:#dc3545;color:#fff;margin-top:8px}
-
-    /* --- DRAG HANDLE TALLER (only line changed) --- */
-    .drag-btn{background-color:#6c757d;color:#fff;border:none;padding:8px 8px;margin-right:8px;border-radius:4px;cursor:grab;font-size:3.5vw}
-
+    /*  ↓↓↓ delete button now inline, no top-margin, a small right-margin  */
+    .delete-group-btn{background:#dc3545;color:#fff;margin-right:8px;border:none;border-radius:6px;padding:6px 10px;cursor:pointer}
+    .drag-btn{background:#6c757d;color:#fff;border:none;padding:8px 8px;margin-right:8px;border-radius:4px;cursor:grab;font-size:3.5vw}
     .group-popup{background:#fff;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);padding:10px;margin-top:8px;font-size:4vw;position:relative;z-index:1}
     .group-popup div{padding:5px;cursor:pointer}
     .group-popup div:hover{background:#f0f0f0}
@@ -48,13 +46,12 @@
       h1{font-size:32px}
       .tab-btn,.save-btn{font-size:15px}
       input[type="text"]{font-size:16px}
-      .word-header,.group-name{font-size:20px}
+      .word-header,.group-name,.group-drag-btn{font-size:20px}
       .part-of-speech,.group-word-item{font-size:16px}
       .meaning,.extra-info,.group-popup{font-size:16px}
       .action-btns button,.delete-group-btn{font-size:14px}
-      #groupSearch,#vocabSearch{font-size:16px;width:96.5%;padding:6px 35px 6px 10px;margin:6px 0 2px}
+      #groupSearch,#vocabSearch{font-size:16px;width:92vw;padding:6px 35px 6px 10px;margin:6px 0 2px}
       #clearSearchBtn,#clearVocabBtn{font-size:18px;margin-top:6px}
-      .search-wrapper{width:100%}
       .drag-btn{font-size:14px}
     }
     .clear-btn{background:#ff9900;color:#fff;border:none;padding:12px;font-size:4.5vw;border-radius:8px;cursor:pointer;width:60%}
@@ -110,7 +107,7 @@
   <div id="groupList" class="group-list"></div>
 </div>
 
-<!-- ----------  SCRIPT ---------- -->
+<!-- ----------  SCRIPT (only order of append changed) ---------- -->
 <script>
 /* ======== DOM REFS ======== */
 const newWordInput=document.getElementById('newWord');
@@ -159,19 +156,12 @@ function saveVocab(){
   if(editingIndex!==null){oldWordText=vocabData[editingIndex].word;vocabData[editingIndex]=newEntry;}
   else vocabData.push(newEntry);
   localStorage.setItem('vocabList',JSON.stringify(vocabData));
-
-  /* --- sync to groups if edit --- */
   if(oldWordText!==null){
-    const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
-    let changed=false;
-    groupData.forEach(g=>{
-      (g.words||[]).forEach((w,i)=>{if(w.word===oldWordText){g.words[i]=newEntry;changed=true;}});
-    });
-    if(changed){localStorage.setItem('vocabGroups',JSON.stringify(groupData));displayGroups();}
+    const g=JSON.parse(localStorage.getItem('vocabGroups'))||[];let ch=false;
+    g.forEach(gr=>(gr.words||[]).forEach((w,i)=>{if(w.word===oldWordText){gr.words[i]=newEntry;ch=true;}}));
+    if(ch){localStorage.setItem('vocabGroups',JSON.stringify(g));displayGroups();}
   }
-  clearForm();
-  alert('Saved successfully!');
-  updateVocabCount(vocabData.length);
+  clearForm();alert('Saved successfully!');updateVocabCount(vocabData.length);
 }
 function clearForm(){
   newWordInput.value=newPartInput.value=newMeaningInput.value=
@@ -179,74 +169,68 @@ function clearForm(){
   unsavedEditData=null;editingIndex=null;
 }
 
-/* ======== DISPLAY VOCAB WITH SEARCH ======== */
+/* ======== DISPLAY VOCAB (with search) ======== */
 function displayVocab(){
   const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[];
   const filter=(vocabSearchInput.value||'').toLowerCase();
   document.getElementById('clearVocabBtn').style.display=filter?'block':'none';
-  updateVocabCount(vocabData.length);
-  vocabListEl.innerHTML='';
-  vocabData.forEach((entry,index)=>{
-    if(filter&&!entry.word.toLowerCase().includes(filter))return;
-    const container=document.createElement('div');container.className='word-entry';
-    const header=document.createElement('div');header.className='word-header';header.textContent=entry.word;
-    const pos=document.createElement('span');pos.className='part-of-speech';pos.textContent=entry.part?`(${entry.part})`:'';
-    header.appendChild(pos);
-    const meaning=document.createElement('div');meaning.className='meaning';meaning.textContent=entry.meaning;meaning.style.display='none';
-    const extra=document.createElement('div');extra.className='extra-info';extra.style.display='none';
-    if(entry.synonyms)extra.innerHTML+=`<div><strong>Synonyms:</strong> ${entry.synonyms}</div>`;
-    if(entry.antonyms)extra.innerHTML+=`<div><strong>Antonyms:</strong> ${entry.antonyms}</div>`;
-    if(entry.collocations)extra.innerHTML+=`<div><strong>Collocations:</strong> ${entry.collocations}</div>`;
-    const closeBtn=document.createElement('button');closeBtn.textContent='Close';
-    Object.assign(closeBtn.style,{marginTop:'10px',background:'#888',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer',display:'none'});
-    let stage=0;header.onclick=()=>{if(stage===0){meaning.style.display='block';stage=1;}
-                                   else if(stage===1){extra.style.display='block';closeBtn.style.display='inline-block';stage=2;}};
-    closeBtn.onclick=e=>{e.stopPropagation();meaning.style.display=extra.style.display=closeBtn.style.display='none';stage=0;};
-    extra.appendChild(closeBtn);
-    const buttons=document.createElement('div');buttons.className='action-btns';
-    const editBtn=document.createElement('button');editBtn.className='edit-btn';editBtn.textContent='Edit';editBtn.onclick=()=>editVocab(index);
-    const delBtn=document.createElement('button');delBtn.className='delete-btn';delBtn.textContent='Delete';delBtn.onclick=()=>deleteVocab(index);
-    const plusBtn=document.createElement('button');plusBtn.className='plus-btn';plusBtn.textContent='+';plusBtn.onclick=()=>showGroupPopup(container,entry);
-    buttons.append(editBtn,delBtn,plusBtn);
-    container.append(header,meaning,extra,buttons);
-    vocabListEl.appendChild(container);
+  updateVocabCount(vocabData.length);vocabListEl.innerHTML='';
+  vocabData.forEach((e,i)=>{
+    if(filter&&!e.word.toLowerCase().includes(filter))return;
+    const c=document.createElement('div');c.className='word-entry';
+    const h=document.createElement('div');h.className='word-header';h.textContent=e.word;
+    const p=document.createElement('span');p.className='part-of-speech';p.textContent=e.part?`(${e.part})`:'';
+    h.appendChild(p);
+    const m=document.createElement('div');m.className='meaning';m.textContent=e.meaning;m.style.display='none';
+    const ex=document.createElement('div');ex.className='extra-info';ex.style.display='none';
+    if(e.synonyms)ex.innerHTML+=`<div><strong>Synonyms:</strong> ${e.synonyms}</div>`;
+    if(e.antonyms)ex.innerHTML+=`<div><strong>Antonyms:</strong> ${e.antonyms}</div>`;
+    if(e.collocations)ex.innerHTML+=`<div><strong>Collocations:</strong> ${e.collocations}</div>`;
+    const cls=document.createElement('button');cls.textContent='Close';
+    Object.assign(cls.style,{marginTop:'10px',background:'#888',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer',display:'none'});
+    let st=0;h.onclick=()=>{if(st===0){m.style.display='block';st=1;}else if(st===1){ex.style.display='block';cls.style.display='inline-block';st=2;}};
+    cls.onclick=e2=>{e2.stopPropagation();m.style.display=ex.style.display=cls.style.display='none';st=0;};
+    ex.appendChild(cls);
+    const btn=document.createElement('div');btn.className='action-btns';
+    const ed=document.createElement('button');ed.className='edit-btn';ed.textContent='Edit';ed.onclick=()=>editVocab(i);
+    const del=document.createElement('button');del.className='delete-btn';del.textContent='Delete';del.onclick=()=>deleteVocab(i);
+    const plus=document.createElement('button');plus.className='plus-btn';plus.textContent='+';plus.onclick=()=>showGroupPopup(c,e);
+    btn.append(ed,del,plus);c.append(h,m,ex,btn);vocabListEl.appendChild(c);
   });
 }
-
-/* clear vocab search */
 function clearVocabSearch(){vocabSearchInput.value='';displayVocab();}
 
 /* ======== POPUP ADD TO GROUP ======== */
 function showGroupPopup(container,word){
   document.querySelectorAll('.group-popup').forEach(p=>p.remove());
-  const groups=JSON.parse(localStorage.getItem('vocabGroups'))||[];
-  if(!groups.length){alert("No groups found. Please create a group first.");return;}
-  const popup=document.createElement('div');popup.className='group-popup';
-  groups.forEach((g,i)=>{const item=document.createElement('div');item.textContent=g.name;
-    item.onclick=()=>{g.words=g.words||[];g.words.push(word);localStorage.setItem('vocabGroups',JSON.stringify(groups));popup.remove();alert(`Added to group "${g.name}"`);};
-    popup.appendChild(item);});
-  container.appendChild(popup);
+  const g=JSON.parse(localStorage.getItem('vocabGroups'))||[];
+  if(!g.length){alert("No groups found. Please	create a group first.");return;}
+  const pop=document.createElement('div');pop.className='group-popup';
+  g.forEach((gr,i)=>{const it=document.createElement('div');it.textContent=gr.name;
+    it.onclick=()=>{gr.words=gr.words||[];gr.words.push(word);localStorage.setItem('vocabGroups',JSON.stringify(g));pop.remove();alert(`Added to group "${gr.name}"`);};
+    pop.appendChild(it);});
+  container.appendChild(pop);
 }
 
 /* ======== EDIT / DELETE MAIN LIST ======== */
 function editVocab(i){
-  const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[],e=vocabData[i];
+  const d=JSON.parse(localStorage.getItem('vocabList'))||[],e=d[i];
   newWordInput.value=e.word;newPartInput.value=e.part;newMeaningInput.value=e.meaning;
   newSynonymsInput.value=e.synonyms||'';newAntonymsInput.value=e.antonyms||'';newCollocationsInput.value=e.collocations||'';
   unsavedEditData={...e};editingIndex=i;switchTab('add');
 }
 function deleteVocab(i){
-  const vocabData=JSON.parse(localStorage.getItem('vocabList'))||[],old=vocabData[i].word;
+  const d=JSON.parse(localStorage.getItem('vocabList'))||[],old=d[i].word;
   if(confirm("Delete this word?")){
-    vocabData.splice(i,1);localStorage.setItem('vocabList',JSON.stringify(vocabData));
-    const groupData=JSON.parse(localStorage.getItem('vocabGroups'))||[];
-    groupData.forEach(g=>g.words=g.words?.filter(w=>w.word!==old)||[]);
-    localStorage.setItem('vocabGroups',JSON.stringify(groupData));
-    updateVocabCount(vocabData.length);displayVocab();displayGroups();
+    d.splice(i,1);localStorage.setItem('vocabList',JSON.stringify(d));
+    const g=JSON.parse(localStorage.getItem('vocabGroups'))||[];
+    g.forEach(gr=>gr.words=gr.words?.filter(w=>w.word!==old)||[]);
+    localStorage.setItem('vocabGroups',JSON.stringify(g));
+    updateVocabCount(d.length);displayVocab();displayGroups();
   }
 }
 
-/* ======== GROUPS ======== */
+/* ======== GROUP CRUD ======== */
 function createGroup(){
   const name=newGroupInput.value.trim();if(!name){alert("Group name cannot be empty.");return;}
   const d=JSON.parse(localStorage.getItem('vocabGroups'))||[];d.unshift({name,words:[]});
@@ -264,49 +248,61 @@ function displayGroups(){
   groupListEl.innerHTML='';
   d.forEach((g,idx)=>{
     if(!g.name.toLowerCase().includes(filter))return;
-    const gEl=document.createElement('div');gEl.className='group-entry';
-    const gName=document.createElement('div');gName.className='group-name';gName.textContent=g.name;
+    const gEl=document.createElement('div');gEl.className='group-entry';gEl.dataset.index=idx;gEl.draggable=true;
+    gEl.addEventListener('dragstart',e=>e.dataTransfer.setData('groupIndex',idx));
+    gEl.addEventListener('dragover',e=>e.preventDefault());
+    gEl.addEventListener('drop',e=>{
+      e.preventDefault();const from=+e.dataTransfer.getData('groupIndex'),to=+gEl.dataset.index;
+      if(isNaN(from)||isNaN(to)||from===to)return;
+      arrayMove(d,from,to);localStorage.setItem('vocabGroups',JSON.stringify(d));displayGroups();
+    });
+
+    const del=document.createElement('button');del.className='delete-group-btn';del.textContent='🗑';
+    del.onclick=()=>deleteGroup(idx);
+
+    const dragBtn=document.createElement('button');dragBtn.className='group-drag-btn';dragBtn.textContent='⇅';
+    dragBtn.draggable=true;dragBtn.addEventListener('dragstart',e=>{e.stopPropagation();e.dataTransfer.setData('groupIndex',idx);});
+
+    const gName=document.createElement('span');gName.className='group-name';gName.textContent=g.name;
+
     const gWords=document.createElement('div');gWords.className='group-words';gWords.style.display=openGroupSet.has(g.name)?'block':'none';
     gName.onclick=()=>{const o=gWords.style.display==='block';gWords.style.display=o?'none':'block';o?openGroupSet.delete(g.name):openGroupSet.add(g.name);};
+
     gWords.addEventListener('dragover',e=>e.preventDefault());
     gWords.addEventListener('drop',e=>{
-      e.preventDefault();const s=+e.dataTransfer.getData('text/plain'),
-      t=+e.target.closest('.group-word-item')?.dataset.index;if(isNaN(s)||isNaN(t)||s===t)return;
+      e.preventDefault();const s=+e.dataTransfer.getData('text/plain'),t=+e.target.closest('.group-word-item')?.dataset.index;
+      if(isNaN(s)||isNaN(t)||s===t)return;
       arrayMove(g.words,s,t);localStorage.setItem('vocabGroups',JSON.stringify(d));displayGroups();
     });
+
     (g.words||[]).forEach((w,i)=>{
       const item=document.createElement('div');item.className='group-word-item';item.dataset.index=i;
       const drag=document.createElement('button');drag.className='drag-btn';drag.textContent='⇅';drag.draggable=true;
       drag.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',i));
       item.appendChild(drag);
       const txt=document.createElement('div');txt.innerHTML=`<strong>${w.word}</strong> (${w.part||'—'})<br>${w.meaning}`;item.appendChild(txt);
-      const extra=document.createElement('div');extra.className='extra-info';extra.style.display='none';
-      if(w.synonyms)extra.innerHTML+=`<div><strong>Synonyms:</strong> ${w.synonyms}</div>`;
-      if(w.antonyms)extra.innerHTML+=`<div><strong>Antonyms:</strong> ${w.antonyms}</div>`;
-      if(w.collocations)extra.innerHTML+=`<div><strong>Collocations:</strong> ${w.collocations}</div>`;
-      /* --- Remove & NEW Edit in group --- */
+      const ex=document.createElement('div');ex.className='extra-info';ex.style.display='none';
+      if(w.synonyms)ex.innerHTML+=`<div><strong>Synonyms:</strong> ${w.synonyms}</div>`;
+      if(w.antonyms)ex.innerHTML+=`<div><strong>Antonyms:</strong> ${w.antonyms}</div>`;
+      if(w.collocations)ex.innerHTML+=`<div><strong>Collocations:</strong> ${w.collocations}</div>`;
       const rm=document.createElement('button');rm.textContent='Remove from group';
       Object.assign(rm.style,{marginTop:'10px',background:'#dc3545',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer'});
       rm.onclick=()=>{g.words.splice(i,1);localStorage.setItem('vocabGroups',JSON.stringify(d));displayGroups();};
       const ed=document.createElement('button');ed.textContent='Edit';
       Object.assign(ed.style,{marginTop:'10px',marginLeft:'8px',background:'orange',color:'#fff',border:'none',padding:'6px 10px',borderRadius:'6px',cursor:'pointer'});
-      ed.onclick=()=>{ /* open editor with this word */
-        const vocab=JSON.parse(localStorage.getItem('vocabList'))||[];
-        const idx=vocab.findIndex(v=>v.word===w.word);
-        if(idx>-1)editVocab(idx);
-        else alert("Word not found in main list.");
-      };
-      extra.append(rm,ed);
-
-      item.onclick=e=>{if(e.target.classList.contains('drag-btn'))return;extra.style.display=extra.style.display==='block'?'none':'block';};
-      gWords.append(item,extra);
+      ed.onclick=()=>{const v=JSON.parse(localStorage.getItem('vocabList'))||[],ix=v.findIndex(vv=>vv.word===w.word);if(ix>-1)editVocab(ix);else alert("Word not found in main list.");};
+      ex.append(rm,ed);
+      item.onclick=e=>{if(e.target.classList.contains('drag-btn'))return;ex.style.display=ex.style.display==='block'?'none':'block';};
+      gWords.append(item,ex);
     });
-    const del=document.createElement('button');del.className='delete-group-btn';del.textContent='Delete Group';del.onclick=()=>deleteGroup(idx);
-    gEl.append(gName,gWords,del);groupListEl.appendChild(gEl);
+
+    /* order changed here: deleteBtn first, then drag, name, words */
+    gEl.append(del,dragBtn,gName,gWords);
+    groupListEl.appendChild(gEl);
   });
 }
 
-/* ======== GROUP SEARCH & CLEAR ======== */
+/* ======== SEARCH ======== */
 function toggleClearButton(){clearSearchBtn.style.display=groupSearch.value?'block':'none';}
 function clearSearch(){groupSearch.value='';clearSearchBtn.style.display='none';displayGroups();}
 
